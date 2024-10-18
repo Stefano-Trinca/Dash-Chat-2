@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:dash_chat_2/dash_chat_2.dart';
-import '../data.dart';
 import 'package:flutter/material.dart';
+
+import '../data.dart';
 
 class MentionSample extends StatefulWidget {
   @override
@@ -20,6 +23,7 @@ class MentionSampleState extends State<MentionSample> {
       body: DashChat(
         currentUser: user,
         onSend: (ChatMessage m) {
+          log('mentions = ${m.mentions} - saved = ${mentions}');
           m.mentions = mentions;
           setState(() {
             messages.insert(0, m);
@@ -47,7 +51,7 @@ class MentionSampleState extends State<MentionSample> {
         ),
         inputOptions: InputOptions(
           onMention: (String trigger, String value,
-              void Function(String) onMentionClick) {
+              void Function(String, Mention) onMentionClick) {
             // Here you would typically do a request to your backend
             // to get the correct results to show
             // according to the trigger and value
@@ -59,15 +63,13 @@ class MentionSampleState extends State<MentionSample> {
                     leading: DefaultAvatar(user: user8),
                     title: Text(user8.getFullName()),
                     onTap: () {
-                      onMentionClick(user8.getFullName());
-                      mentions.add(
-                        Mention(
-                          title: trigger + user8.getFullName(),
-                          customProperties: <String, dynamic>{
-                            'userId': user8.id,
-                          },
-                        ),
+                      final mention = Mention(
+                        title: trigger + user8.getFullName(),
+                        customProperties: <String, dynamic>{
+                          'userId': user8.id,
+                        },
                       );
+                      onMentionClick(user8.getFullName(), mention);
                     },
                   ),
                   const Divider(),
@@ -75,15 +77,13 @@ class MentionSampleState extends State<MentionSample> {
                     leading: DefaultAvatar(user: user5),
                     title: Text(user5.getFullName()),
                     onTap: () {
-                      onMentionClick(user5.getFullName());
-                      mentions.add(
-                        Mention(
-                          title: trigger + user5.getFullName(),
-                          customProperties: <String, dynamic>{
-                            'userId': user5.id,
-                          },
-                        ),
+                      final mention = Mention(
+                        title: trigger + user8.getFullName(),
+                        customProperties: <String, dynamic>{
+                          'userId': user5.id,
+                        },
                       );
+                      onMentionClick(user5.getFullName(), mention);
                     },
                   )
                 ];

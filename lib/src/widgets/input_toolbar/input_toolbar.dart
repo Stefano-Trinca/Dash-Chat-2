@@ -29,6 +29,7 @@ class InputToolbarState extends State<InputToolbar>
   int currentMentionIndex = -1;
   String currentTrigger = '';
   late FocusNode focusNode;
+  List<Mention> mentions = <Mention>[];
 
   @override
   void initState() {
@@ -37,7 +38,7 @@ class InputToolbarState extends State<InputToolbar>
     focusNode = widget.inputOptions.focusNode ?? FocusNode();
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
-        _clearOverlay();
+        Future.delayed(Durations.short2).then((_) => _clearOverlay());
       }
     });
     WidgetsBinding.instance.addObserver(this);
@@ -62,6 +63,10 @@ class InputToolbarState extends State<InputToolbar>
 
   @override
   Widget build(BuildContext context) {
+    final bool showTrailing = (widget.inputOptions.trailing != null &&
+            widget.inputOptions.trailing!.isNotEmpty) &&
+        (textController.text.isEmpty || widget.inputOptions.alwaysShowTrailing);
+
     return SafeArea(
       top: false,
       child: Container(
@@ -114,8 +119,7 @@ class InputToolbarState extends State<InputToolbar>
                 ),
               ),
             ),
-            if (widget.inputOptions.trailing != null &&
-                widget.inputOptions.showTraillingBeforeSend)
+            if (showTrailing && widget.inputOptions.showTraillingBeforeSend)
               ...widget.inputOptions.trailing!,
             if (widget.inputOptions.alwaysShowSend ||
                 textController.text.isNotEmpty)
@@ -124,8 +128,7 @@ class InputToolbarState extends State<InputToolbar>
                   : defaultSendButton(color: Theme.of(context).primaryColor)(
                       _sendMessage,
                     ),
-            if (widget.inputOptions.trailing != null &&
-                !widget.inputOptions.showTraillingBeforeSend)
+            if (showTrailing && !widget.inputOptions.showTraillingBeforeSend)
               ...widget.inputOptions.trailing!,
           ],
         ),
@@ -154,7 +157,7 @@ class InputToolbarState extends State<InputToolbar>
     }
   }
 
-  void _onMentionClick(String value) {
+  void _onMentionClick(String value, Mention mention) {
     textController.text = textController.text.replaceRange(
       currentMentionIndex,
       textController.text.length,
@@ -163,6 +166,7 @@ class InputToolbarState extends State<InputToolbar>
     textController.selection = TextSelection.collapsed(
       offset: textController.text.length,
     );
+    mentions.add(mention);
     _clearOverlay();
   }
 
@@ -225,16 +229,24 @@ class InputToolbarState extends State<InputToolbar>
 
   void _sendMessage() {
     if (textController.text.isNotEmpty) {
+      final String text = textController.text;
+      Map<String, Mention> cleanMentions = <String, Mention>{};
+      for (var m in mentions) {
+        cleanMentions[m.title] = m;
+      }
+
       final ChatMessage message = ChatMessage(
-        text: textController.text,
+        text: text,
         user: widget.currentUser,
         createdAt: DateTime.now(),
+        mentions: cleanMentions.values.toList(),
       );
       widget.onSend(message);
       textController.text = '';
       if (widget.inputOptions.onTextChange != null) {
         widget.inputOptions.onTextChange!('');
       }
+      focusNode.requestFocus();
     }
   }
 }

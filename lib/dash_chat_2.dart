@@ -8,6 +8,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:video_player/video_player.dart' as vp;
+import 'dart:developer' as dev;
 
 import 'src/helpers/link_helper.dart';
 import 'src/widgets/image_provider/image_provider.dart';

@@ -13,7 +13,8 @@ class InputOptions {
     this.inputDecoration,
     this.textCapitalization = TextCapitalization.none,
     this.alwaysShowSend = false,
-    this.sendOnEnter = false,
+    this.alwaysShowTrailing = false,
+    this.sendOnEnter = true,
     this.textInputAction,
     this.maxInputLength,
     this.leading,
@@ -34,7 +35,7 @@ class InputOptions {
   /// You need to return a list of widget that will be shown inside the selection overlay,
   /// for instance user ListTiles
   final Future<List<Widget>> Function(String trigger, String value,
-      void Function(String value) onMentionClick)? onMention;
+      void Function(String value, Mention mention) onMentionClick)? onMention;
 
   /// The list of string triggers for the onMention callback
   /// By default it only includes '@' character
@@ -45,6 +46,9 @@ class InputOptions {
 
   /// Always show the send button, will be hidden when the text is empty otherwise
   final bool alwaysShowSend;
+
+  /// Always show the trailing, will be hidden when the text is not empty otherwise
+  final bool alwaysShowTrailing;
 
   /// Send the message when the user presses the enter key
   final bool sendOnEnter;

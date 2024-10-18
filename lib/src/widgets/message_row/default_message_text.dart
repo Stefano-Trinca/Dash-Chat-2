@@ -24,9 +24,7 @@ class DefaultMessageText extends StatelessWidget {
       crossAxisAlignment:
           isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: <Widget>[
-        Wrap(
-          children: getMessage(context),
-        ),
+        getMessage(context),
         if (messageOptions.showTime)
           messageOptions.messageTimeBuilder != null
               ? messageOptions.messageTimeBuilder!(message, isOwnMessage)
@@ -47,47 +45,87 @@ class DefaultMessageText extends StatelessWidget {
     );
   }
 
-  List<Widget> getMessage(BuildContext context) {
-    if (message.mentions != null && message.mentions!.isNotEmpty) {
-      String stringRegex = r'([\s\S]*)';
-      String stringMentionRegex = '';
-      for (final Mention mention in message.mentions!) {
-        stringRegex += '(${mention.title})' r'([\s\S]*)';
-        stringMentionRegex += stringMentionRegex.isEmpty
-            ? '(${mention.title})'
-            : '|(${mention.title})';
-      }
-      final RegExp mentionRegex = RegExp(stringMentionRegex);
-      final RegExp regexp = RegExp(stringRegex);
-
-      RegExpMatch? match = regexp.firstMatch(message.text);
-      if (match != null) {
-        List<Widget> res = <Widget>[];
-        match
-            .groups(List<int>.generate(match.groupCount, (int i) => i + 1))
-            .forEach((String? part) {
-          Mention? mention;
-          if (mentionRegex.hasMatch(part!)) {
-            try {
-              mention = message.mentions?.firstWhere(
-                (Mention m) => m.title == part,
-              );
-            } catch (e) {
-              // There is no mention
-            }
-          }
-          if (mention != null) {
-            res.add(getMention(context, mention));
+  Widget getMessage(BuildContext context) {
+    if (message.isMarkdown) {
+      return MarkdownBody(
+        data: message.text,
+        selectable: true,
+        styleSheet: messageOptions.markdownStyleSheet,
+        onTapLink: (String value, String? href, String title) {
+          if (href != null) {
+            openLink(href);
           } else {
-            res.add(getParsePattern(context, part, message.isMarkdown));
+            openLink(value);
           }
-        });
-        if (res.isNotEmpty) {
-          return res;
+        },
+      );
+    } else if (message.mentions != null && message.mentions!.isNotEmpty) {
+      List<TextSpan> spans = <TextSpan>[];
+
+      Color textColor = message.type == MessageType.system
+          ? messageOptions.timeTextColor()
+          : isOwnMessage
+              ? messageOptions.currentUserTextColor(context)
+              : messageOptions.textColor;
+
+      String remainingText = message.text;
+      for (final Mention mention in message.mentions!) {
+        int mentionIndex = remainingText.indexOf(mention.title);
+
+        if (mentionIndex != -1) {
+          if (mentionIndex > 0) {
+            spans.add(TextSpan(
+              text: remainingText.substring(0, mentionIndex),
+              style: TextStyle(
+                color: textColor,
+              ),
+            ));
+          }
+
+          spans.add(TextSpan(
+            text: mention.title,
+            style: TextStyle(
+              color: textColor,
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.none,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                if (messageOptions.onPressMention != null) {
+                  messageOptions.onPressMention!(mention);
+                }
+              },
+          ));
+
+          remainingText =
+              remainingText.substring(mentionIndex + mention.title.length);
         }
       }
+
+      if (remainingText.isNotEmpty) {
+        spans.add(TextSpan(
+          text: remainingText,
+          style: TextStyle(
+            color: textColor,
+          ),
+        ));
+      }
+
+      return RichText(
+        text: TextSpan(children: spans),
+      );
     }
-    return <Widget>[getParsePattern(context, message.text, message.isMarkdown)];
+
+    return RichText(
+      text: TextSpan(
+        text: message.text,
+        style: TextStyle(
+          color: isOwnMessage
+              ? messageOptions.currentUserTextColor(context)
+              : messageOptions.textColor,
+        ),
+      ),
+    );
   }
 
   Widget getParsePattern(BuildContext context, String text, bool isMarkdown) {

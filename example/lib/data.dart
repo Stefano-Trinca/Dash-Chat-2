@@ -76,6 +76,12 @@ List<ChatMessage> basicSample = <ChatMessage>[
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
   ChatMessage(
+      type: MessageType.system,
+      user: ChatUser(id: 'system'),
+      createdAt: DateTime(2021, 01, 30, 16, 45),
+      text: 'Chat system Upgrade #done!',
+      mentions: [Mention(title: '#done')]),
+  ChatMessage(
     text: "Oh what's up guys?",
     user: user2,
     createdAt: DateTime(2021, 01, 30, 16, 45),

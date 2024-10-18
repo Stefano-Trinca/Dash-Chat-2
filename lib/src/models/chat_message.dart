@@ -5,6 +5,7 @@ class ChatMessage {
   ChatMessage({
     required this.user,
     required this.createdAt,
+    this.type = MessageType.user,
     this.isMarkdown = false,
     this.text = '',
     this.medias,
@@ -21,6 +22,7 @@ class ChatMessage {
       user: ChatUser.fromJson(jsonData['user'] as Map<String, dynamic>),
       createdAt: DateTime.parse(jsonData['createdAt'].toString()).toLocal(),
       text: jsonData['text']?.toString() ?? '',
+      type: MessageType.parse(jsonData['type']?.toString() ?? 'user'),
       isMarkdown: jsonData['isMarkdown']?.toString() == 'true',
       medias: jsonData['medias'] != null
           ? (jsonData['medias'] as List<dynamic>)
@@ -47,6 +49,9 @@ class ChatMessage {
           : null,
     );
   }
+
+  /// Determinate the type of the message, if is a user message or a systema message, default is user
+  MessageType type;
 
   /// If the message is Markdown formatted then it will be converted to Markdown (by default it will be false)
   bool isMarkdown;
@@ -95,6 +100,7 @@ class ChatMessage {
       'status': status.toString(),
       'replyTo': replyTo?.toJson(),
       'isMarkdown': isMarkdown,
+      'type': type.toString(),
     };
   }
 }
@@ -131,4 +137,21 @@ class MessageStatus {
   static const MessageStatus read = MessageStatus._internal('read');
   static const MessageStatus received = MessageStatus._internal('received');
   static const MessageStatus pending = MessageStatus._internal('pending');
+}
+
+enum MessageType {
+  user,
+  system;
+
+  @override
+  String toString() => switch (this) {
+        MessageType.user => 'user',
+        MessageType.system => 'system',
+      };
+
+  static MessageType parse(String value) => switch (value) {
+        'user' => MessageType.user,
+        'system' => MessageType.system,
+        _ => MessageType.user,
+      };
 }

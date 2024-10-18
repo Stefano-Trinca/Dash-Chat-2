@@ -23,6 +23,10 @@ class BasicState extends State<Basic> {
             messages.insert(0, m);
           });
         },
+        inputOptions: InputOptions(
+          sendButtonBuilder: (send) =>
+              IconButton(onPressed: send, icon: Icon(Icons.send_rounded)),
+        ),
         messages: messages,
         messageListOptions: MessageListOptions(
           onLoadEarlier: () async {

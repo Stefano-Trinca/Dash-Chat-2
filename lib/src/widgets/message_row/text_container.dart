@@ -50,6 +50,21 @@ class TextContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final childMessage = messageTextBuilder != null
+        ? messageTextBuilder!(message, previousMessage, nextMessage)
+        : DefaultMessageText(
+            message: message,
+            isOwnMessage: isOwnMessage,
+            messageOptions: messageOptions,
+          );
+
+    if (message.type == MessageType.system) {
+      return Padding(
+        padding: messageOptions.messagePadding,
+        child: childMessage,
+      );
+    }
+
     return Container(
       decoration: messageOptions.messageDecorationBuilder != null
           ? messageOptions.messageDecorationBuilder!(
@@ -76,13 +91,7 @@ class TextContainer extends StatelessWidget {
                       : messageOptions.borderRadius,
             ),
       padding: messageOptions.messagePadding,
-      child: messageTextBuilder != null
-          ? messageTextBuilder!(message, previousMessage, nextMessage)
-          : DefaultMessageText(
-              message: message,
-              isOwnMessage: isOwnMessage,
-              messageOptions: messageOptions,
-            ),
+      child: childMessage,
     );
   }
 }

@@ -10,8 +10,8 @@ class MessageRow extends StatelessWidget {
     this.isAfterDateSeparator = false,
     this.isBeforeDateSeparator = false,
     this.messageOptions = const MessageOptions(),
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   /// Current message to show
   final ChatMessage message;
@@ -51,6 +51,7 @@ class MessageRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isSystem = message.type == MessageType.system;
     final bool isOwnMessage = message.user.id == currentUser.id;
     bool isPreviousSameAuthor = false;
     bool isNextSameAuthor = false;
@@ -75,10 +76,11 @@ class MessageRow extends StatelessWidget {
         children: <Widget>[
           if (messageOptions.showOtherUsersAvatar)
             Opacity(
-              opacity:
-                  !isOwnMessage && (!isNextSameAuthor || isBeforeDateSeparator)
-                      ? 1
-                      : 0,
+              opacity: !isOwnMessage &&
+                      (!isNextSameAuthor || isBeforeDateSeparator) &&
+                      !isSystem
+                  ? 1
+                  : 0,
               child: getAvatar(),
             ),
           if (!messageOptions.showOtherUsersAvatar)

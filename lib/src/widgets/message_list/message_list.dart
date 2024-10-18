@@ -57,117 +57,127 @@ class MessageListState extends State<MessageList> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
-      child: Stack(
-        children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: ListView.builder(
-                  physics: widget.messageListOptions.scrollPhysics,
-                  padding: widget.readOnly ? null : EdgeInsets.zero,
-                  controller: scrollController,
-                  reverse: true,
-                  itemCount: widget.messages.length,
-                  itemBuilder: (BuildContext context, int i) {
-                    final ChatMessage? previousMessage =
-                        i < widget.messages.length - 1
-                            ? widget.messages[i + 1]
-                            : null;
-                    final ChatMessage? nextMessage =
-                        i > 0 ? widget.messages[i - 1] : null;
-                    final ChatMessage message = widget.messages[i];
-                    final bool isAfterDateSeparator = _shouldShowDateSeparator(
-                        previousMessage, message, widget.messageListOptions);
-                    bool isBeforeDateSeparator = false;
-                    if (nextMessage != null) {
-                      isBeforeDateSeparator = _shouldShowDateSeparator(
-                          message, nextMessage, widget.messageListOptions);
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+        child: Stack(
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  child: ListView.builder(
+                    physics: widget.messageListOptions.scrollPhysics,
+                    padding: widget.readOnly ? null : EdgeInsets.zero,
+                    controller: scrollController,
+                    reverse: true,
+                    itemCount: widget.messages.length,
+                    itemBuilder: (BuildContext context, int i) {
+                      final ChatMessage? previousMessage =
+                          i < widget.messages.length - 1
+                              ? widget.messages[i + 1]
+                              : null;
+                      final ChatMessage? nextMessage =
+                          i > 0 ? widget.messages[i - 1] : null;
+                      final ChatMessage message = widget.messages[i];
+                      final bool isAfterDateSeparator =
+                          _shouldShowDateSeparator(previousMessage, message,
+                              widget.messageListOptions);
+                      bool isBeforeDateSeparator = false;
+                      if (nextMessage != null) {
+                        isBeforeDateSeparator = _shouldShowDateSeparator(
+                            message, nextMessage, widget.messageListOptions);
+                      }
+                      return Column(
+                        children: <Widget>[
+                          if (isAfterDateSeparator)
+                            widget.messageListOptions.dateSeparatorBuilder !=
+                                    null
+                                ? widget.messageListOptions
+                                    .dateSeparatorBuilder!(message.createdAt)
+                                : DefaultDateSeparator(
+                                    date: message.createdAt,
+                                    messageListOptions:
+                                        widget.messageListOptions,
+                                  ),
+                          if (widget.messageOptions.messageRowBuilder !=
+                              null) ...<Widget>[
+                            widget.messageOptions.messageRowBuilder!(
+                              message,
+                              previousMessage,
+                              nextMessage,
+                              isAfterDateSeparator,
+                              isBeforeDateSeparator,
+                            ),
+                          ] else
+                            MessageRow(
+                              message: widget.messages[i],
+                              nextMessage: nextMessage,
+                              previousMessage: previousMessage,
+                              currentUser: widget.currentUser,
+                              isAfterDateSeparator: isAfterDateSeparator,
+                              isBeforeDateSeparator: isBeforeDateSeparator,
+                              messageOptions: widget.messageOptions,
+                              maxWidth: constraints.maxWidth * 0.7,
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                if (widget.typingUsers != null &&
+                    widget.typingUsers!.isNotEmpty)
+                  ...widget.typingUsers!.map((ChatUser user) {
+                    if (widget.messageListOptions.typingBuilder != null) {
+                      return widget.messageListOptions.typingBuilder!(user);
                     }
-                    return Column(
-                      children: <Widget>[
-                        if (isAfterDateSeparator)
-                          widget.messageListOptions.dateSeparatorBuilder != null
-                              ? widget.messageListOptions
-                                  .dateSeparatorBuilder!(message.createdAt)
-                              : DefaultDateSeparator(
-                                  date: message.createdAt,
-                                  messageListOptions: widget.messageListOptions,
-                                ),
-                        if (widget.messageOptions.messageRowBuilder !=
-                            null) ...<Widget>[
-                          widget.messageOptions.messageRowBuilder!(
-                            message,
-                            previousMessage,
-                            nextMessage,
-                            isAfterDateSeparator,
-                            isBeforeDateSeparator,
-                          ),
-                        ] else
-                          MessageRow(
-                            message: widget.messages[i],
-                            nextMessage: nextMessage,
-                            previousMessage: previousMessage,
-                            currentUser: widget.currentUser,
-                            isAfterDateSeparator: isAfterDateSeparator,
-                            isBeforeDateSeparator: isBeforeDateSeparator,
-                            messageOptions: widget.messageOptions,
-                          ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              if (widget.typingUsers != null && widget.typingUsers!.isNotEmpty)
-                ...widget.typingUsers!.map((ChatUser user) {
-                  if (widget.messageListOptions.typingBuilder != null) {
-                    return widget.messageListOptions.typingBuilder!(user);
-                  }
-                  return DefaultTypingBuilder(user: user);
-                }),
-              if (widget.messageListOptions.showFooterBeforeQuickReplies &&
-                  widget.messageListOptions.chatFooterBuilder != null)
-                widget.messageListOptions.chatFooterBuilder!,
-              if (widget.messages.isNotEmpty &&
-                  widget.messages.first.quickReplies != null &&
-                  widget.messages.first.quickReplies!.isNotEmpty &&
-                  widget.messages.first.user.id != widget.currentUser.id)
-                QuickReplies(
-                  quickReplies: widget.messages.first.quickReplies!,
-                  quickReplyOptions: widget.quickReplyOptions,
-                ),
-              if (!widget.messageListOptions.showFooterBeforeQuickReplies &&
-                  widget.messageListOptions.chatFooterBuilder != null)
-                widget.messageListOptions.chatFooterBuilder!,
-            ],
-          ),
-          if (isLoadingMore)
-            Positioned(
-              top: 8.0,
-              right: 0,
-              left: 0,
-              child: widget.messageListOptions.loadEarlierBuilder ??
-                  const Center(
-                    child: SizedBox(
-                      child: CircularProgressIndicator(),
-                    ),
+                    return DefaultTypingBuilder(user: user);
+                  }),
+                if (widget.messageListOptions.showFooterBeforeQuickReplies &&
+                    widget.messageListOptions.chatFooterBuilder != null)
+                  widget.messageListOptions.chatFooterBuilder!,
+                if (widget.messages.isNotEmpty &&
+                    widget.messages.first.quickReplies != null &&
+                    widget.messages.first.quickReplies!.isNotEmpty &&
+                    widget.messages.first.user.id != widget.currentUser.id)
+                  QuickReplies(
+                    quickReplies: widget.messages.first.quickReplies!,
+                    quickReplyOptions: widget.quickReplyOptions,
                   ),
+                if (!widget.messageListOptions.showFooterBeforeQuickReplies &&
+                    widget.messageListOptions.chatFooterBuilder != null)
+                  widget.messageListOptions.chatFooterBuilder!,
+              ],
             ),
-          if (!widget.scrollToBottomOptions.disabled && scrollToBottomIsVisible)
-            widget.scrollToBottomOptions.scrollToBottomBuilder != null
-                ? widget.scrollToBottomOptions
-                    .scrollToBottomBuilder!(scrollController)
-                : DefaultScrollToBottom(
-                    scrollController: scrollController,
-                    readOnly: widget.readOnly,
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    textColor: Theme.of(context).primaryColor,
-                  ),
-        ],
-      ),
-    );
+            if (isLoadingMore)
+              Positioned(
+                top: 8.0,
+                right: 0,
+                left: 0,
+                child: widget.messageListOptions.loadEarlierBuilder ??
+                    const Center(
+                      child: SizedBox(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+              ),
+            if (!widget.scrollToBottomOptions.disabled &&
+                scrollToBottomIsVisible)
+              widget.scrollToBottomOptions.scrollToBottomBuilder != null
+                  ? widget.scrollToBottomOptions
+                      .scrollToBottomBuilder!(scrollController)
+                  : DefaultScrollToBottom(
+                      scrollController: scrollController,
+                      readOnly: widget.readOnly,
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                      textColor: Theme.of(context).primaryColor,
+                    ),
+          ],
+        ),
+      );
+    });
   }
 
   /// Check if a date separator needs to be shown

@@ -172,7 +172,7 @@ class MessageOptions {
 
   /// Max message width
   ///
-  /// Default to: `MediaQuery.of(context).size.width * 0.7`
+  /// Default to: `BoxConstraints.maxWidth * 0.7`
   final double? maxWidth;
 
   /// When a message have both an text and a list of media

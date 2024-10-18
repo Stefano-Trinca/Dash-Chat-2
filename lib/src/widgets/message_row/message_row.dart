@@ -10,6 +10,7 @@ class MessageRow extends StatelessWidget {
     this.isAfterDateSeparator = false,
     this.isBeforeDateSeparator = false,
     this.messageOptions = const MessageOptions(),
+    required this.maxWidth,
     super.key,
   });
 
@@ -33,6 +34,9 @@ class MessageRow extends StatelessWidget {
 
   /// Options to customize the behaviour and design of the messages
   final MessageOptions messageOptions;
+
+  /// message max width based on the view width
+  final double maxWidth;
 
   /// Get the avatar widget
   Widget getAvatar() {
@@ -94,8 +98,7 @@ class MessageRow extends StatelessWidget {
                 : null,
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                maxWidth: messageOptions.maxWidth ??
-                    MediaQuery.of(context).size.width * 0.7,
+                maxWidth: messageOptions.maxWidth ?? maxWidth,
               ),
               child: Column(
                 crossAxisAlignment: isOwnMessage

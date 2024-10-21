@@ -111,7 +111,8 @@ class MessageOptions {
   ///
   /// Default to: `currentUserTextColor`
   Color currentUserTimeTextColor(BuildContext context) {
-    return _currentUserTimeTextColor ?? currentUserTextColor(context);
+    return _currentUserTimeTextColor ??
+        currentUserTextColor(context).withOpacity(0.6);
   }
 
   /// Used to calculate [currentUserTimeTextColor]
@@ -132,7 +133,7 @@ class MessageOptions {
   /// Default to: `textColor`
 
   Color timeTextColor() {
-    return _timeTextColor ?? textColor;
+    return _timeTextColor ?? textColor.withOpacity(0.6);
   }
 
   /// Used to calculate [timeTextColor]

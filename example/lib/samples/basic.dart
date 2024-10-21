@@ -50,6 +50,7 @@ class BasicState extends State<Basic> {
           showTraillingBeforeSend: true,
         ),
         messages: messages,
+        messageOptions: MessageOptions(showTime: true),
         messageListOptions: MessageListOptions(
           onLoadEarlier: () async {
             await Future.delayed(const Duration(seconds: 3));

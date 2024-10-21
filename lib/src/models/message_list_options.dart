@@ -6,6 +6,7 @@ class MessageListOptions {
     this.showDateSeparator = true,
     this.dateSeparatorFormat,
     this.dateSeparatorBuilder,
+    this.emptyListBuilder,
     this.separatorFrequency = SeparatorFrequency.days,
     this.scrollController,
     this.chatFooterBuilder,
@@ -26,6 +27,9 @@ class MessageListOptions {
   /// If you want to create you own separator widget
   /// You can use DefaultDateSeparator to only override some variables
   final Widget Function(DateTime date)? dateSeparatorBuilder;
+
+  /// If no message in the list source
+  final Widget Function(BuildContext context)? emptyListBuilder;
 
   /// The frequency of the separator
   final SeparatorFrequency separatorFrequency;

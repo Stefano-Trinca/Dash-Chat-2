@@ -34,9 +34,8 @@ class DefaultMessageText extends StatelessWidget {
                     (messageOptions.timeFormat ?? intl.DateFormat('HH:mm'))
                         .format(message.createdAt),
                     style: TextStyle(
-                      color: isOwnMessage
-                          ? messageOptions.currentUserTimeTextColor(context)
-                          : messageOptions.timeTextColor(),
+                      color: messageOptions.getTimeTextColor(
+                          context, isOwnMessage),
                       fontSize: messageOptions.timeFontSize,
                     ),
                   ),
@@ -63,10 +62,8 @@ class DefaultMessageText extends StatelessWidget {
       List<TextSpan> spans = <TextSpan>[];
 
       Color textColor = message.type == MessageType.system
-          ? messageOptions.timeTextColor()
-          : isOwnMessage
-              ? messageOptions.currentUserTextColor(context)
-              : messageOptions.textColor;
+          ? messageOptions.getTimeTextColor(context, false)
+          : messageOptions.getTextColor(context, isOwnMessage);
 
       String remainingText = message.text;
       for (final Mention mention in message.mentions!) {
@@ -120,9 +117,7 @@ class DefaultMessageText extends StatelessWidget {
       text: TextSpan(
         text: message.text,
         style: TextStyle(
-          color: isOwnMessage
-              ? messageOptions.currentUserTextColor(context)
-              : messageOptions.textColor,
+          color: messageOptions.getTextColor(context, isOwnMessage),
         ),
       ),
     );
@@ -148,9 +143,7 @@ class DefaultMessageText extends StatelessWidget {
                 : defaultParsePatterns,
             text: text,
             style: TextStyle(
-              color: isOwnMessage
-                  ? messageOptions.currentUserTextColor(context)
-                  : messageOptions.textColor,
+              color: messageOptions.getTextColor(context, isOwnMessage),
             ),
           );
   }
@@ -164,9 +157,7 @@ class DefaultMessageText extends StatelessWidget {
               ? messageOptions.onPressMention!(mention)
               : null,
         style: TextStyle(
-          color: isOwnMessage
-              ? messageOptions.currentUserTextColor(context)
-              : messageOptions.textColor,
+          color: messageOptions.getTextColor(context, isOwnMessage),
           decoration: TextDecoration.none,
           fontWeight: FontWeight.w600,
         ),

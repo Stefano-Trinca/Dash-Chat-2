@@ -13,10 +13,6 @@ class MessageOptions {
     this.onLongPressMessage,
     this.onPressMessage,
     this.onPressMention,
-    Color? currentUserContainerColor,
-    Color? currentUserTextColor,
-    this.containerColor = const Color(0xFFF5F5F5),
-    this.textColor = Colors.black,
     this.messagePadding = const EdgeInsets.all(11),
     this.maxWidth,
     this.messageDecorationBuilder,
@@ -32,18 +28,74 @@ class MessageOptions {
     this.messageTimeBuilder,
     this.messageMediaBuilder,
     this.borderRadius = 18.0,
-    Color? currentUserTimeTextColor,
     this.marginDifferentAuthor = const EdgeInsets.only(top: 15),
     this.marginSameAuthor = const EdgeInsets.only(top: 2),
     this.spaceWhenAvatarIsHidden = 10.0,
     this.timeFontSize = 10.0,
     this.timePadding = const EdgeInsets.only(top: 5),
     this.markdownStyleSheet,
+    Color? currentUserContainerColor,
+    Color? currentUserTextColor,
+    Color? containerColor,
+    Color? textColor,
+    Color? currentUserTimeTextColor,
     Color? timeTextColor,
   })  : _currentUserContainerColor = currentUserContainerColor,
+        _containerColor = containerColor,
         _currentUserTextColor = currentUserTextColor,
         _currentUserTimeTextColor = currentUserTimeTextColor,
+        _textColor = textColor,
         _timeTextColor = timeTextColor;
+
+  // Fields for color options
+
+  /// Color of the current user's chat bubbles
+  final Color? _currentUserContainerColor;
+
+  /// Color of the other users' chat bubbles
+  final Color? _containerColor;
+
+  /// Color of the current user's text in chat bubbles
+  final Color? _currentUserTextColor;
+
+  /// Color of the other users' text in chat bubbles
+  final Color? _textColor;
+
+  /// Color of the current user's time text in chat bubbles
+  final Color? _currentUserTimeTextColor;
+
+  /// Color of the other users' time text in chat bubbles
+  final Color? _timeTextColor;
+
+  /// General method to get the container color based on the user type.
+  /// If [isOwnMessage] is true, it will return the current user's container color.
+  /// Otherwise, it will return the other user's container color.
+  Color getContainerColor(BuildContext context, bool isOwnMessage) {
+    return isOwnMessage
+        ? (_currentUserContainerColor ?? Theme.of(context).primaryColor)
+        : (_containerColor ?? Theme.of(context).colorScheme.secondaryContainer);
+  }
+
+  /// General method to get the text color based on the user type.
+  /// If [isOwnMessage] is true, it will return the current user's text color.
+  /// Otherwise, it will return the other user's text color.
+  Color getTextColor(BuildContext context, bool isOwnMessage) {
+    return isOwnMessage
+        ? (_currentUserTextColor ?? Theme.of(context).colorScheme.onPrimary)
+        : (_textColor ?? Theme.of(context).colorScheme.onSurface);
+  }
+
+  /// General method to get the time text color based on the user type.
+  /// If [isOwnMessage] is true, it will return the current user's time text color.
+  /// Otherwise, it will return the other user's time text color.
+  Color getTimeTextColor(BuildContext context, bool isOwnMessage) {
+    return isOwnMessage
+        ? (_currentUserTimeTextColor ??
+            getTextColor(context, true).withOpacity(0.6))
+        : (_timeTextColor ?? getTextColor(context, false).withOpacity(0.6));
+  }
+
+  // Rest of the properties and methods remain unchanged
 
   /// Format of the time if [showTime] is true
   /// Default to: DateFormat('HH:mm')
@@ -87,66 +139,13 @@ class MessageOptions {
   /// Function to call when the user press on a message mention
   final Function(Mention)? onPressMention;
 
-  /// Color of the current user chat bubbles
-  ///
-  /// Default to: `Theme.of(context).primaryColor`
-  Color currentUserContainerColor(BuildContext context) {
-    return _currentUserContainerColor ?? Theme.of(context).primaryColor;
-  }
-
-  /// Used to calculate [currentUserContainerColor]
-  final Color? _currentUserContainerColor;
-
-  /// Color of the current user text in chat bubbles
-  ///
-  /// Default to: `Theme.of(context).colorScheme.onPrimary`
-  Color currentUserTextColor(BuildContext context) {
-    return _currentUserTextColor ?? Theme.of(context).colorScheme.onPrimary;
-  }
-
-  /// Used to calculate [currentUserTextColor]
-  final Color? _currentUserTextColor;
-
-  /// Color of current user time text in chat bubbles
-  ///
-  /// Default to: `currentUserTextColor`
-  Color currentUserTimeTextColor(BuildContext context) {
-    return _currentUserTimeTextColor ??
-        currentUserTextColor(context).withOpacity(0.6);
-  }
-
-  /// Used to calculate [currentUserTimeTextColor]
-  final Color? _currentUserTimeTextColor;
-
-  /// Color of the other users chat bubbles
-  ///
-  /// Default to: `Colors.grey.shade100`
-  final Color containerColor;
-
-  /// Color of the other users text in chat bubbles
-  ///
-  /// Default to: `Colors.black`
-  final Color textColor;
-
-  /// Color of other users time text in chat bubbles
-  ///
-  /// Default to: `textColor`
-
-  Color timeTextColor() {
-    return _timeTextColor ?? textColor.withOpacity(0.6);
-  }
-
-  /// Used to calculate [timeTextColor]
-  final Color? _timeTextColor;
-
   /// Builder to create the entire message row yourself
   final Widget Function(
-    ChatMessage message,
-    ChatMessage? previousMessage,
-    ChatMessage? nextMessage,
-    bool isAfterDateSeparator,
-    bool isBeforeDateSeparator,
-  )? messageRowBuilder;
+      ChatMessage message,
+      ChatMessage? previousMessage,
+      ChatMessage? nextMessage,
+      bool isAfterDateSeparator,
+      bool isBeforeDateSeparator)? messageRowBuilder;
 
   /// Builder to create own message text widget
   final Widget Function(ChatMessage message, ChatMessage? previousMessage,
@@ -168,19 +167,19 @@ class MessageOptions {
 
   /// Padding around the text in chat bubbles
   ///
-  /// Default to: `EdgeInsets.all(11)`
+  /// Default to: EdgeInsets.all(11)
   final EdgeInsets messagePadding;
 
   /// Max message width
   ///
-  /// Default to: `BoxConstraints.maxWidth * 0.7`
+  /// Default to: BoxConstraints.maxWidth * 0.7
   final double? maxWidth;
 
-  /// When a message have both an text and a list of media
-  /// it will determine which one th show first
+  /// When a message has both text and a list of media
+  /// it will determine which one to show first
   final bool textBeforeMedia;
 
-  /// To create your own BoxDecoration fot the chat bubble
+  /// To create your own BoxDecoration for the chat bubble
   /// You can use defaultMessageDecoration to only override some variables
   final BoxDecoration Function(
       ChatMessage message,
@@ -201,32 +200,32 @@ class MessageOptions {
 
   /// Border radius of the chat bubbles
   ///
-  /// Default to: `18.0`
+  /// Default to: 18.0
   final double borderRadius;
 
-  /// Margin around the chat bubble when previous author is different
+  /// Margin around the chat bubble when the previous author is different
   ///
-  /// Default to: `const EdgeInsets.only(top: 15)`
+  /// Default to: const EdgeInsets.only(top: 15)
   final EdgeInsets marginDifferentAuthor;
 
-  /// Margin around the chat bubble when previous author is the same
+  /// Margin around the chat bubble when the previous author is the same
   ///
-  /// Default to: `const EdgeInsets.only(top: 2)`
+  /// Default to: const EdgeInsets.only(top: 2)
   final EdgeInsets marginSameAuthor;
 
   /// Space between chat bubble and edge of the list when avatar is hidden via [showOtherUsersAvatar] or [showCurrentUserAvatar]
   ///
-  /// Default to: `10.0`
+  /// Default to: 10.0
   final double spaceWhenAvatarIsHidden;
 
   /// Font size of the time text in chat bubbles
   ///
-  /// Default to: `10.0`
+  /// Default to: 10.0
   final double timeFontSize;
 
   /// Space between time and message text in chat bubbles
   ///
-  /// Default to: `const EdgeInsets.only(top: 5)`
+  /// Default to: const EdgeInsets.only(top: 5)
   final EdgeInsets timePadding;
 
   /// Stylesheet for markdown message rendering

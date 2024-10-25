@@ -68,9 +68,8 @@ class MediaContainer extends StatelessWidget {
                       ? Icon(
                           Icons.description,
                           size: 18,
-                          color: isOwnMessage
-                              ? messageOptions.currentUserTextColor(context)
-                              : messageOptions.textColor,
+                          color: messageOptions.getTextColor(
+                              context, isOwnMessage),
                         )
                       : loading,
                 ),
@@ -79,9 +78,7 @@ class MediaContainer extends StatelessWidget {
                     media.fileName,
                     style: TextStyle(
                       decoration: TextDecoration.underline,
-                      color: isOwnMessage
-                          ? messageOptions.currentUserTextColor(context)
-                          : messageOptions.textColor,
+                      color: messageOptions.getTextColor(context, isOwnMessage),
                     ),
                   ),
                 ),

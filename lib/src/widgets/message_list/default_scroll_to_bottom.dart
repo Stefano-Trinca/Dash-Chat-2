@@ -11,9 +11,11 @@ class DeafultScrollToBottom extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton.filled(
       style: IconButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-      ),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
+          elevation: 4,
+          shadowColor:
+              Theme.of(context).colorScheme.onSurface.withOpacity(0.25)),
       onPressed: onPressed,
       icon: Icon(icon),
     );

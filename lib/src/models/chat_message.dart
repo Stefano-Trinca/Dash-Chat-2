@@ -21,7 +21,7 @@ class ChatMessage {
   factory ChatMessage.fromJson(Map<String, dynamic> jsonData) {
     return ChatMessage(
       id: jsonData['id']?.toString() ?? '',
-      user: ChatUser.fromJson(jsonData['user'] as Map<String, dynamic>),
+      user: jsonData['user']?.toString() ?? '',
       createdAt: DateTime.parse(jsonData['createdAt'].toString()).toLocal(),
       text: jsonData['text']?.toString() ?? '',
       type: MessageType.parse(jsonData['type']?.toString() ?? 'user'),
@@ -65,7 +65,7 @@ class ChatMessage {
   String text;
 
   /// Author of the message
-  ChatUser user;
+  String user;
 
   /// List of medias of the message
   List<ChatMedia>? medias;
@@ -94,7 +94,7 @@ class ChatMessage {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
-      'user': user.toJson(),
+      'user': user,
       'createdAt': createdAt.toUtc().toIso8601String(),
       'text': text,
       'medias': medias?.map((ChatMedia media) => media.toJson()).toList(),

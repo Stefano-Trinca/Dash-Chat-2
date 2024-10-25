@@ -3,6 +3,7 @@ part of '../../../dash_chat_2.dart';
 /// @nodoc
 class MessageRow extends StatelessWidget {
   const MessageRow({
+    super.key,
     required this.message,
     required this.currentUser,
     this.previousMessage,
@@ -11,7 +12,7 @@ class MessageRow extends StatelessWidget {
     this.isBeforeDateSeparator = false,
     this.messageOptions = const MessageOptions(),
     required this.maxWidth,
-    super.key,
+    this.getChatUser,
   });
 
   /// Current message to show
@@ -24,7 +25,7 @@ class MessageRow extends StatelessWidget {
   final ChatMessage? nextMessage;
 
   /// Current user of the chat
-  final ChatUser currentUser;
+  final String currentUser;
 
   /// If the message is preceded by a date separator
   final bool isAfterDateSeparator;
@@ -38,6 +39,8 @@ class MessageRow extends StatelessWidget {
   /// message max width based on the view width
   final double maxWidth;
 
+  final Future<ChatUser> Function(String uid)? getChatUser;
+
   /// Get the avatar widget
   Widget getAvatar() {
     return messageOptions.avatarBuilder != null
@@ -50,21 +53,29 @@ class MessageRow extends StatelessWidget {
             user: message.user,
             onLongPressAvatar: messageOptions.onLongPressAvatar,
             onPressAvatar: messageOptions.onPressAvatar,
+            getChatUser: getChatUser,
           );
   }
 
   @override
   Widget build(BuildContext context) {
     final bool isSystem = message.type == MessageType.system;
-    final bool isOwnMessage = message.user.id == currentUser.id;
+    final bool isOwnMessage = message.user == currentUser;
     bool isPreviousSameAuthor = false;
     bool isNextSameAuthor = false;
-    if (previousMessage != null &&
-        previousMessage!.user.id == message.user.id) {
+    if (previousMessage != null && previousMessage!.user == message.user) {
       isPreviousSameAuthor = true;
     }
-    if (nextMessage != null && nextMessage!.user.id == message.user.id) {
+    if (nextMessage != null && nextMessage!.user == message.user) {
       isNextSameAuthor = true;
+    }
+
+    Widget? userNameWidget;
+    if (!isOwnMessage &&
+        messageOptions.showOtherUsersName &&
+        messageOptions.userNameBuilder != null &&
+        (!isPreviousSameAuthor || isAfterDateSeparator)) {
+      userNameWidget = messageOptions.userNameBuilder!.call(message.user);
     }
 
     return Container(
@@ -108,12 +119,7 @@ class MessageRow extends StatelessWidget {
                 children: <Widget>[
                   if (messageOptions.top != null)
                     messageOptions.top!(message, previousMessage, nextMessage),
-                  if (!isOwnMessage &&
-                      messageOptions.showOtherUsersName &&
-                      (!isPreviousSameAuthor || isAfterDateSeparator))
-                    messageOptions.userNameBuilder != null
-                        ? messageOptions.userNameBuilder!(message.user)
-                        : DefaultUserName(user: message.user),
+                  if (userNameWidget != null) userNameWidget,
                   if (message.medias != null &&
                       message.medias!.isNotEmpty &&
                       messageOptions.textBeforeMedia)

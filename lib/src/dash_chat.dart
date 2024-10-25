@@ -1,29 +1,32 @@
 part of '../dash_chat_2.dart';
 
 /// {@category Entry point}
-class DashChat extends StatelessWidget {
+class DashChat extends StatefulWidget {
   const DashChat({
     required this.currentUser,
-    required this.onSend,
+    this.handler = const ChatHandler(),
+    this.builders = const ChatBuilders(),
     required this.messages,
     this.inputOptions = const InputOptions(),
     this.messageOptions = const MessageOptions(),
     this.messageListOptions = const MessageListOptions(),
     this.quickReplyOptions = const QuickReplyOptions(),
-    this.scrollToBottomOptions = const ScrollToBottomOptions(),
+    this.showScrollToBottomOption = true,
     this.readOnly = false,
     this.typingUsers,
     Key? key,
   }) : super(key: key);
 
   /// The current user of the chat
-  final ChatUser currentUser;
+  final String currentUser;
 
-  /// Function to call when the user sends a message
-  final void Function(ChatMessage message) onSend;
+  /// Handle function for messages and chat
+  final ChatHandler handler;
 
   /// List of messages visible in the chat
   final List<ChatMessage> messages;
+
+  final ChatBuilders builders;
 
   /// Options to customize the behaviour and design of the chat input
   final InputOptions inputOptions;
@@ -37,39 +40,55 @@ class DashChat extends StatelessWidget {
   /// Options to customize the behaviour and design of the quick replies
   final QuickReplyOptions quickReplyOptions;
 
-  /// Options to customize the behaviour and design of the scroll-to-bottom button
-  final ScrollToBottomOptions scrollToBottomOptions;
+  /// Options show the scroll-to-bottom button
+  final bool showScrollToBottomOption;
 
   /// Option to make the chat read only, it will hide the input field
   final bool readOnly;
 
   /// List of users currently typing in the chat
-  final List<ChatUser>? typingUsers;
+  final List<String>? typingUsers;
+
+  @override
+  State<DashChat> createState() => _DashChatState();
+}
+
+class _DashChatState extends State<DashChat> {
+  late final ChatController controller;
+
+  @override
+  void initState() {
+    controller = ChatController(
+      currentUser: widget.currentUser,
+      handler: widget.handler,
+      initialMessages: widget.messages,
+      initilTypingUsers: widget.typingUsers ?? <String>[],
+      messageListOptions: widget.messageListOptions,
+      messageOptions: widget.messageOptions,
+      quickReplyOptions: widget.quickReplyOptions,
+      readOnly: widget.readOnly,
+      showScrollToBottomOption: widget.showScrollToBottomOption,
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         Expanded(
-          child: messages.isEmpty
-              ? (messageListOptions.emptyListBuilder?.call(context) ??
+          child: widget.messages.isEmpty
+              ? (widget.messageListOptions.emptyListBuilder?.call(context) ??
                   const DefaultListEmptyBuilder())
-              : MessageList(
-                  currentUser: currentUser,
-                  messages: messages,
-                  messageOptions: messageOptions,
-                  messageListOptions: messageListOptions,
-                  quickReplyOptions: quickReplyOptions,
-                  scrollToBottomOptions: scrollToBottomOptions,
-                  typingUsers: typingUsers,
-                  readOnly: readOnly,
+              : MessagesList(
+                  controller: controller,
+                  builders: widget.builders,
                 ),
         ),
-        if (!readOnly)
+        if (!widget.readOnly)
           InputToolbar(
-            inputOptions: inputOptions,
-            currentUser: currentUser,
-            onSend: onSend,
+            controller: controller,
+            inputOptions: widget.inputOptions,
           ),
       ],
     );

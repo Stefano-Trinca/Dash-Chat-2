@@ -17,12 +17,12 @@ class SendOnEnterState extends State<SendOnEnter> {
         title: const Text('SendOnEnter example'),
       ),
       body: DashChat(
-        currentUser: user,
-        onSend: (ChatMessage m) {
+        currentUser: '0',
+        handler: ChatHandler(onSend: (ChatMessage m) {
           setState(() {
             messages.insert(0, m);
           });
-        },
+        }),
         messages: messages,
         inputOptions: const InputOptions(
           sendOnEnter: true,

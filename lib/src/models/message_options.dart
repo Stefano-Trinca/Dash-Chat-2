@@ -64,19 +64,19 @@ class MessageOptions {
 
   /// If you want to create your own userName widget when [showOtherUsersName] is true
   /// You can use DefaultUserName to only override some variables
-  final Widget Function(ChatUser user)? userNameBuilder;
+  final Widget Function(String userUid)? userNameBuilder;
 
   /// Builder to create your own avatar
   /// You can use DefaultAvatar to only override some variables
   final Widget Function(
-          ChatUser, Function? onPressAvatar, Function? onLongPressAvatar)?
+          String userUid, Function? onPressAvatar, Function? onLongPressAvatar)?
       avatarBuilder;
 
   /// Function to call when the user press on an avatar
-  final Function(ChatUser)? onPressAvatar;
+  final Function(String userUid)? onPressAvatar;
 
   /// Function to call when the user long press on an avatar
-  final Function(ChatUser)? onLongPressAvatar;
+  final Function(String userUi)? onLongPressAvatar;
 
   /// Function to call when the user long press on a message
   final Function(ChatMessage)? onLongPressMessage;

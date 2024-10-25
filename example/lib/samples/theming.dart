@@ -1,6 +1,7 @@
 import 'package:dash_chat_2/dash_chat_2.dart';
-import '../data.dart';
 import 'package:flutter/material.dart';
+
+import '../data.dart';
 
 class ThemeSample extends StatefulWidget {
   @override
@@ -33,12 +34,12 @@ class ThemeSampleState extends State<ThemeSample> {
         body: Container(
           color: const Color(0xff001eff),
           child: DashChat(
-            currentUser: user,
-            onSend: (ChatMessage m) {
+            currentUser: '0',
+            handler: ChatHandler(onSend: (ChatMessage m) {
               setState(() {
                 messages.insert(0, m);
               });
-            },
+            }),
             inputOptions: InputOptions(
               inputTextStyle: const TextStyle(
                 color: Color(0xff001eff),

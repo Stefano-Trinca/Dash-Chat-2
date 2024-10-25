@@ -3,20 +3,15 @@ part of '../../../dash_chat_2.dart';
 /// @nodoc
 class InputToolbar extends StatefulWidget {
   const InputToolbar({
-    required this.currentUser,
-    required this.onSend,
+    required this.controller,
     this.inputOptions = const InputOptions(),
     Key? key,
   }) : super(key: key);
 
+  final ChatController controller;
+
   /// Options to custom the toolbar
   final InputOptions inputOptions;
-
-  /// Function to call when the message is sent (click on the send button)
-  final Function(ChatMessage) onSend;
-
-  /// Current user using the chat
-  final ChatUser currentUser;
 
   @override
   State<InputToolbar> createState() => InputToolbarState();
@@ -237,11 +232,11 @@ class InputToolbarState extends State<InputToolbar>
 
       final ChatMessage message = ChatMessage(
         text: text,
-        user: widget.currentUser,
+        user: widget.controller.currentUser,
         createdAt: DateTime.now(),
         mentions: cleanMentions.values.toList(),
       );
-      widget.onSend(message);
+      widget.controller.sendMessage(message);
       textController.text = '';
       if (widget.inputOptions.onTextChange != null) {
         widget.inputOptions.onTextChange!('');

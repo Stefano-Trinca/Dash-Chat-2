@@ -1,8 +1,28 @@
 part of '../../../dash_chat_2.dart';
 
+class DeafultScrollToBottom extends StatelessWidget {
+  const DeafultScrollToBottom(
+      {super.key, required this.onPressed, this.icon = Icons.arrow_downward});
+
+  final VoidCallback onPressed;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.filled(
+      style: IconButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+      ),
+      onPressed: onPressed,
+      icon: Icon(icon),
+    );
+  }
+}
+
 /// {@category Default widgets}
-class DefaultScrollToBottom extends StatelessWidget {
-  const DefaultScrollToBottom({
+class DefaultScrollToBottomOld extends StatelessWidget {
+  const DefaultScrollToBottomOld({
     required this.scrollController,
     this.readOnly = false,
     this.backgroundColor,

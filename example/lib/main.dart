@@ -34,6 +34,8 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    return Basic();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dash Chat Demo'),

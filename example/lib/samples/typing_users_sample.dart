@@ -17,13 +17,13 @@ class TypingUsersSampleState extends State<TypingUsersSample> {
         title: const Text('Typing user example'),
       ),
       body: DashChat(
-        currentUser: user,
-        onSend: (ChatMessage m) {
+        currentUser: '0',
+        handler: ChatHandler(onSend: (ChatMessage m) {
           setState(() {
             messages.insert(0, m);
           });
-        },
-        typingUsers: <ChatUser>[user3],
+        }),
+        typingUsers: <String>['3'],
         messages: messages,
       ),
     );

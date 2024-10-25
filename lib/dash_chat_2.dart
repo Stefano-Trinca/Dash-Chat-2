@@ -10,10 +10,15 @@ import 'package:intl/intl.dart' as intl;
 import 'package:video_player/video_player.dart' as vp;
 import 'dart:developer' as dev;
 
+import 'src/core/chat_builders.dart';
+import 'src/core/chat_controller.dart';
+import 'src/core/chat_handler.dart';
 import 'src/helpers/link_helper.dart';
 import 'src/widgets/image_provider/image_provider.dart';
 
 export 'package:flutter_parsed_text/flutter_parsed_text.dart';
+export 'src/core/chat_builders.dart';
+export 'src/core/chat_handler.dart';
 
 part 'src/dash_chat.dart';
 part 'src/models/chat_media.dart';

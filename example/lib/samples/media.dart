@@ -17,12 +17,12 @@ class MediaState extends State<Media> {
         title: const Text('Media example'),
       ),
       body: DashChat(
-        currentUser: user,
-        onSend: (ChatMessage m) {
+        currentUser: '0',
+        handler: ChatHandler(onSend: (ChatMessage m) {
           setState(() {
             messages.insert(0, m);
           });
-        },
+        }),
         messages: messages,
       ),
     );

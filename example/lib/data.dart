@@ -4,6 +4,19 @@ String profileImage =
     'https://firebasestorage.googleapis.com/v0/b/molteo-40978.appspot.com/o/1-intro-photo-final.jpeg?alt=media&token=daf78997-d8f0-49d1-9120-a9380bde48b5';
 
 // We have all the possibilities for users
+
+List<ChatUser> users = [
+  user,
+  user1,
+  user2,
+  user3,
+  user4,
+  user5,
+  user6,
+  user7,
+  user8,
+];
+
 ChatUser user = ChatUser(id: '0');
 ChatUser user1 = ChatUser(id: '1');
 ChatUser user2 = ChatUser(id: '2', firstName: 'Niki Lauda');
@@ -20,42 +33,42 @@ ChatUser user8 = ChatUser(
 List<ChatMessage> allUsersSample = <ChatMessage>[
   ChatMessage(
     text: 'Test',
-    user: user1,
+    user: '0',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
   ChatMessage(
     text: 'Test',
-    user: user2,
+    user: '2',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
   ChatMessage(
     text: 'Test',
-    user: user3,
+    user: '3',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
   ChatMessage(
     text: 'Test',
-    user: user4,
+    user: '4',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
   ChatMessage(
     text: 'Test',
-    user: user5,
+    user: '5',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
   ChatMessage(
     text: 'Test',
-    user: user6,
+    user: '6',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
   ChatMessage(
     text: 'Test',
-    user: user7,
+    user: '7',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
   ChatMessage(
     text: 'Test',
-    user: user8,
+    user: '8',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
 ];
@@ -63,7 +76,7 @@ List<ChatMessage> allUsersSample = <ChatMessage>[
 List<ChatMessage> basicSample = <ChatMessage>[
   ChatMessage(
     text: 'google.com hello you @Marc is it &you okay?',
-    user: user2,
+    user: '2',
     createdAt: DateTime(2021, 01, 31, 16, 45),
     mentions: [
       Mention(title: '@Marc'),
@@ -72,28 +85,33 @@ List<ChatMessage> basicSample = <ChatMessage>[
   ),
   ChatMessage(
     text: 'google.com',
-    user: user2,
+    user: '2',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
   ChatMessage(
       type: MessageType.system,
-      user: ChatUser(id: 'system'),
+      user: 'system',
       createdAt: DateTime(2021, 01, 30, 16, 45),
       text: 'Chat system Upgrade #done!',
       mentions: [Mention(title: '#done')]),
   ChatMessage(
     text: "Oh what's up guys?",
-    user: user2,
+    user: '2',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
   ChatMessage(
+    text: 'Ciao',
+    user: 'user',
+    createdAt: DateTime(2021, 01, 30, 15, 50),
+  ),
+  ChatMessage(
     text: 'How you doin?',
-    user: user8,
+    user: '8',
     createdAt: DateTime(2021, 01, 30, 16, 34),
   ),
   ChatMessage(
     type: MessageType.system,
-    user: ChatUser(id: 'system'),
+    user: 'system',
     createdAt: DateTime(2021, 01, 30, 16, 45),
     text:
         'Chat system message longer for get infomation about the other users and how they use the chat',
@@ -102,22 +120,17 @@ List<ChatMessage> basicSample = <ChatMessage>[
     isMarkdown: true,
     text:
         "```dart\nvoid main() {\n  print('Hello World');\n}\n```\nThe above code will print \"Hello World\" to the console when run.\n\nHere's a breakdown of the code:\n\n* The `main()` function is the entry point of the program. It's where execution begins.\n* `print('Hello World')` prints \"Hello World\" to the console. The `print()` function is a built-in function in Dart that outputs data to the console.\n\nYou can run this code by creating a new Dart file (e.g., `hello_world.dart`) and pasting the code into it. Then, open a terminal window, navigate to the directory where the file is saved, and run the following command:\n\n```\ndart hello_world.dart\n```\n\nThis will compile and run the Dart program, and you should see \"Hello World\" printed to the console. Know more: www.google.com ",
-    user: user2,
+    user: '2',
     createdAt: DateTime(2021, 01, 30, 15, 50),
   ),
   ChatMessage(
     text: 'Hey!',
-    user: user,
-    createdAt: DateTime(2021, 01, 30, 15, 50),
-  ),
-  ChatMessage(
-    text: 'Hey!',
-    user: user,
+    user: 'user',
     createdAt: DateTime(2021, 01, 28, 15, 50),
   ),
   ChatMessage(
     text: 'Hey!',
-    user: user,
+    user: 'user',
     createdAt: DateTime(2021, 01, 28, 15, 50),
   ),
 ];
@@ -165,7 +178,7 @@ List<ChatMessage> media = <ChatMessage>[
         fileName: 'image.png',
       )
     ],
-    user: user3,
+    user: '3',
     createdAt: DateTime(2021, 01, 30, 16, 34),
   ),
 ];
@@ -173,7 +186,7 @@ List<ChatMessage> media = <ChatMessage>[
 List<ChatMessage> quickReplies = <ChatMessage>[
   ChatMessage(
     text: 'How you doin?',
-    user: user3,
+    user: '3',
     createdAt: DateTime.now(),
     quickReplies: <QuickReply>[
       QuickReply(title: 'Great!'),
@@ -185,7 +198,7 @@ List<ChatMessage> quickReplies = <ChatMessage>[
 List<ChatMessage> mentionSample = <ChatMessage>[
   ChatMessage(
     text: 'Hello @Niki, you should check #channel',
-    user: user2,
+    user: '2',
     createdAt: DateTime(2021, 01, 31, 16, 45),
     mentions: [
       Mention(title: '@Niki', customProperties: {'userId': user5.id}),
@@ -194,7 +207,7 @@ List<ChatMessage> mentionSample = <ChatMessage>[
   ),
   ChatMessage(
     text: "Oh what's up guys?",
-    user: user5,
+    user: '5',
     createdAt: DateTime(2021, 01, 30, 16, 45),
   ),
 ];

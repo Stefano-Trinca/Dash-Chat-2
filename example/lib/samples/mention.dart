@@ -21,15 +21,12 @@ class MentionSampleState extends State<MentionSample> {
         title: const Text('Mention example'),
       ),
       body: DashChat(
-        currentUser: user,
-        onSend: (ChatMessage m) {
-          log('mentions = ${m.mentions} - saved = ${mentions}');
-          m.mentions = mentions;
+        currentUser: '0',
+        handler: ChatHandler(onSend: (ChatMessage m) {
           setState(() {
             messages.insert(0, m);
-            mentions = [];
           });
-        },
+        }),
         messages: messages,
         messageListOptions: MessageListOptions(
           onLoadEarlier: () async {
@@ -60,7 +57,7 @@ class MentionSampleState extends State<MentionSample> {
               () {
                 return <Widget>[
                   ListTile(
-                    leading: DefaultAvatar(user: user8),
+                    leading: DefaultAvatar(user: '8'),
                     title: Text(user8.getFullName()),
                     onTap: () {
                       final mention = Mention(
@@ -74,7 +71,7 @@ class MentionSampleState extends State<MentionSample> {
                   ),
                   const Divider(),
                   ListTile(
-                    leading: DefaultAvatar(user: user5),
+                    leading: DefaultAvatar(user: '5'),
                     title: Text(user5.getFullName()),
                     onTap: () {
                       final mention = Mention(

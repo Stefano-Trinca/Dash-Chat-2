@@ -17,15 +17,15 @@ class QuickRepliesSampleState extends State<QuickRepliesSample> {
         title: const Text('QuickReplies example'),
       ),
       body: DashChat(
-        currentUser: user,
-        onSend: (ChatMessage m) {
+        currentUser: '0',
+        handler: ChatHandler(onSend: (ChatMessage m) {
           setState(() {
             messages.insert(0, m);
           });
-        },
+        }),
         quickReplyOptions: QuickReplyOptions(onTapQuickReply: (QuickReply r) {
           final ChatMessage m = ChatMessage(
-            user: user,
+            user: '0',
             text: r.value ?? r.title,
             createdAt: DateTime.now(),
           );

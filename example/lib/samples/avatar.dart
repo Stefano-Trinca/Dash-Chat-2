@@ -1,6 +1,7 @@
 import 'package:dash_chat_2/dash_chat_2.dart';
-import '../data.dart';
 import 'package:flutter/material.dart';
+
+import '../data.dart';
 
 class AvatarSample extends StatefulWidget {
   @override
@@ -17,12 +18,12 @@ class AvatarSampleState extends State<AvatarSample> {
         title: const Text('Users example'),
       ),
       body: DashChat(
-        currentUser: user,
-        onSend: (ChatMessage m) {
+        currentUser: 'user',
+        handler: ChatHandler(onSend: (ChatMessage m) {
           setState(() {
             messages.insert(0, m);
           });
-        },
+        }),
         messages: messages,
       ),
     );

@@ -53,6 +53,10 @@ class ChatController {
     notifierMessages.value = source;
   }
 
+  void updateTypingUsers(List<String> source) {
+    notifierTypingUsers.value = source;
+  }
+
   void sendMessage(ChatMessage message) {
     handler.onSend?.call(message);
   }

@@ -73,6 +73,17 @@ class _DashChatState extends State<DashChat> {
   }
 
   @override
+  void didUpdateWidget(covariant DashChat oldWidget) {
+    if (oldWidget.messages != widget.messages) {
+      controller.updateMessages(widget.messages);
+    }
+    if (oldWidget.typingUsers != widget.typingUsers) {
+      controller.updateTypingUsers(widget.typingUsers ?? []);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[

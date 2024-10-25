@@ -31,6 +31,10 @@ class BasicState extends State<Basic> {
             return users[idx];
           }
         },
+        streamOnMentionTrigger: (trigger, value) => Stream.value([
+          ...users.where((e) =>
+              (e.firstName ?? '').toLowerCase().contains(value.toLowerCase()))
+        ]),
       ),
       inputOptions: InputOptions(
         sendOnEnter: true,
@@ -38,21 +42,12 @@ class BasicState extends State<Basic> {
         sendButtonBuilder: (send) =>
             IconButton(onPressed: send, icon: const Icon(Icons.send_rounded)),
         trailing: [IconButton(onPressed: () {}, icon: const Icon(Icons.mic))],
-        onMention: (trigger, value, onMentionClick) async {
-          log('onMention build');
-          return <Widget>[
-            for (int i = 0; i < 10; i++)
-              ListTile(
-                title: Text('gino'),
-                onTap: () => onMentionClick.call(
-                    'gino',
-                    Mention(
-                      title: '@gino',
-                    )),
-              ),
-          ];
-        },
-        showTraillingBeforeSend: true,
+        mentionTileBuilder: (item, onSelect) => ListTile(
+          onTap: () => onSelect(
+              (item as ChatUser).firstName ?? 'name', Mention(title: 'name')),
+          title: Text((item as ChatUser).firstName ?? ''),
+        ),
+        showTrailingBeforeSend: true,
       ),
       messages: messages,
       // messages: [],

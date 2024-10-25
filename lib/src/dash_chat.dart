@@ -84,24 +84,32 @@ class _DashChatState extends State<DashChat> {
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: widget.messages.isEmpty
-              ? (widget.messageListOptions.emptyListBuilder?.call(context) ??
-                  const DefaultListEmptyBuilder())
-              : MessagesList(
-                  controller: controller,
-                  builders: widget.builders,
-                ),
-        ),
-        if (!widget.readOnly)
-          InputToolbar(
-            controller: controller,
-            inputOptions: widget.inputOptions,
+    return Portal(
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: widget.messages.isEmpty
+                ? (widget.messageListOptions.emptyListBuilder?.call(context) ??
+                    const DefaultListEmptyBuilder())
+                : MessagesList(
+                    controller: controller,
+                    builders: widget.builders,
+                  ),
           ),
-      ],
+          if (!widget.readOnly)
+            InputToolbar(
+              controller: controller,
+              inputOptions: widget.inputOptions,
+            ),
+        ],
+      ),
     );
   }
 }

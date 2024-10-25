@@ -19,23 +19,8 @@ class InputToolbar extends StatefulWidget {
 
 class InputToolbarState extends State<InputToolbar>
     with WidgetsBindingObserver {
-  late TextEditingController textController;
-  OverlayEntry? _overlayEntry;
-  int currentMentionIndex = -1;
-  String currentTrigger = '';
-  late FocusNode focusNode;
-  List<Mention> mentions = <Mention>[];
-
   @override
   void initState() {
-    textController =
-        widget.inputOptions.textController ?? TextEditingController();
-    focusNode = widget.inputOptions.focusNode ?? FocusNode();
-    focusNode.addListener(() {
-      if (!focusNode.hasFocus) {
-        Future.delayed(Durations.short2).then((_) => _clearOverlay());
-      }
-    });
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
@@ -45,22 +30,76 @@ class InputToolbarState extends State<InputToolbar>
     final double bottomInset = View.of(context).viewInsets.bottom;
     final bool isKeyboardActive = bottomInset > 0.0;
     if (!isKeyboardActive) {
-      _clearOverlay();
+      widget.controller.clearOverlay();
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _clearOverlay();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool showTrailing = (widget.inputOptions.trailing != null &&
-            widget.inputOptions.trailing!.isNotEmpty) &&
-        (textController.text.isEmpty || widget.inputOptions.alwaysShowTrailing);
+    final Widget trailing = ValueListenableBuilder(
+      valueListenable: widget.controller.notifierInputIsWriting,
+      builder: (BuildContext context, bool value, Widget? child) {
+        // determinat if to show the trailing
+        final bool showTrailing = (widget.inputOptions.trailing != null &&
+                widget.inputOptions.trailing!.isNotEmpty) &&
+            (value || widget.inputOptions.alwaysShowTrailing);
+
+        if (showTrailing) {
+          return Row(
+            children: widget.inputOptions.trailing!,
+          );
+        } else {
+          return const SizedBox();
+        }
+      },
+    );
+
+    final Widget sendButton = ValueListenableBuilder(
+      valueListenable: widget.controller.notifierInputIsWriting,
+      builder: (BuildContext context, bool value, Widget? child) {
+        if (value || widget.inputOptions.alwaysShowSend) {
+          return widget.inputOptions.sendButtonBuilder != null
+              ? widget.inputOptions
+                  .sendButtonBuilder!(() => widget.controller.sendMessage())
+              : DefaultSendButton(
+                  onSend: () => widget.controller.sendMessage(),
+                  icon: widget.inputOptions.sendIcon,
+                );
+        } else {
+          return const SizedBox();
+        }
+      },
+    );
+
+    final Widget field = Directionality(
+      textDirection: widget.inputOptions.inputTextDirection,
+      child: TextField(
+        focusNode: widget.controller.inputFocusNode,
+        controller: widget.controller.inputController,
+        enabled: !widget.inputOptions.inputDisabled,
+        textCapitalization: widget.inputOptions.inputCapitalization,
+        textInputAction: widget.inputOptions.textInputAction,
+        decoration:
+            widget.inputOptions.inputDecoration ?? defaultInputDecoration(),
+        maxLength: widget.inputOptions.maxInputLength,
+        minLines: 1,
+        maxLines: widget.inputOptions.sendOnEnter
+            ? 1
+            : widget.inputOptions.inputMaxLines,
+        cursorColor: widget.inputOptions.cursorStyle.color,
+        cursorWidth: widget.inputOptions.cursorStyle.width,
+        showCursor: !widget.inputOptions.cursorStyle.hide,
+        style: widget.inputOptions.inputTextStyle,
+        onSubmitted: (String value) => widget.controller.sendMessage(),
+        autocorrect: widget.inputOptions.autocorrect,
+      ),
+    );
 
     return SafeArea(
       top: false,
@@ -75,173 +114,79 @@ class InputToolbarState extends State<InputToolbar>
             if (widget.inputOptions.leading != null)
               ...widget.inputOptions.leading!,
             Expanded(
-              child: Directionality(
-                textDirection: widget.inputOptions.inputTextDirection,
-                child: TextField(
-                  focusNode: focusNode,
-                  controller: textController,
-                  enabled: !widget.inputOptions.inputDisabled,
-                  textCapitalization: widget.inputOptions.textCapitalization,
-                  textInputAction: widget.inputOptions.textInputAction,
-                  decoration: widget.inputOptions.inputDecoration ??
-                      defaultInputDecoration(),
-                  maxLength: widget.inputOptions.maxInputLength,
-                  minLines: 1,
-                  maxLines: widget.inputOptions.sendOnEnter
-                      ? 1
-                      : widget.inputOptions.inputMaxLines,
-                  cursorColor: widget.inputOptions.cursorStyle.color,
-                  cursorWidth: widget.inputOptions.cursorStyle.width,
-                  showCursor: !widget.inputOptions.cursorStyle.hide,
-                  style: widget.inputOptions.inputTextStyle,
-                  onSubmitted: (String value) {
-                    if (widget.inputOptions.sendOnEnter) {
-                      _sendMessage();
-                    }
-                  },
-                  onChanged: (String value) async {
-                    setState(() {});
-                    if (widget.inputOptions.onTextChange != null) {
-                      widget.inputOptions.onTextChange!(value);
-                    }
-                    WidgetsBinding.instance.addPostFrameCallback((_) async {
-                      if (widget.inputOptions.onMention != null) {
-                        await _checkMentions(value);
-                      }
-                    });
-                  },
-                  autocorrect: widget.inputOptions.autocorrect,
-                ),
-              ),
+              child: ValueListenableBuilder(
+                  valueListenable: widget.controller.notifierShowInputOverlay,
+                  builder: (BuildContext context, bool visible, Widget? child) {
+                    return PortalTarget(
+                      visible: visible &&
+                          widget.inputOptions.mentionTileBuilder != null,
+                      portalFollower: _portalFollower(context),
+                      anchor: const Aligned(
+                        follower: Alignment.bottomLeft,
+                        target: Alignment.topLeft,
+                        widthFactor: 1,
+                        backup: Aligned(
+                          follower: Alignment.bottomLeft,
+                          target: Alignment.topLeft,
+                          widthFactor: 1,
+                        ),
+                      ),
+                      child: field,
+                    );
+                  }),
             ),
-            if (showTrailing && widget.inputOptions.showTraillingBeforeSend)
-              ...widget.inputOptions.trailing!,
-            if (widget.inputOptions.alwaysShowSend ||
-                textController.text.isNotEmpty)
-              widget.inputOptions.sendButtonBuilder != null
-                  ? widget.inputOptions.sendButtonBuilder!(_sendMessage)
-                  : defaultSendButton(color: Theme.of(context).primaryColor)(
-                      _sendMessage,
-                    ),
-            if (showTrailing && !widget.inputOptions.showTraillingBeforeSend)
-              ...widget.inputOptions.trailing!,
+            if (widget.inputOptions.showTrailingBeforeSend) trailing,
+            sendButton,
+            if (!widget.inputOptions.showTrailingBeforeSend) trailing,
           ],
         ),
       ),
     );
   }
 
-  Future<void> _checkMentions(String text) async {
-    bool hasMatch = false;
-    for (final String trigger in widget.inputOptions.onMentionTriggers) {
-      final RegExp regexp = RegExp(r'(?<![^\s<>])' + trigger + r'([^\s<>]+)$');
-      if (regexp.hasMatch(text)) {
-        hasMatch = true;
-        currentMentionIndex = textController.text.indexOf(regexp);
-        currentTrigger = trigger;
-        List<Widget> children = await widget.inputOptions.onMention!(
-          trigger,
-          regexp.firstMatch(text)!.group(1)!,
-          _onMentionClick,
-        );
-        _showMentionModal(children);
-      }
-    }
-    if (!hasMatch) {
-      _clearOverlay();
-    }
-  }
+  Widget _portalFollower(BuildContext context) {
+    final ScrollController scrollController = ScrollController();
+    return ValueListenableBuilder(
+        valueListenable: widget.controller.notifierMentionTriggerValue,
+        builder: (BuildContext context, (String, String) triggerValue,
+            Widget? child) {
+          return StreamBuilder<List<Object>>(
+              stream: widget.controller.handler.streamOnMentionTrigger
+                      ?.call(triggerValue.$1, triggerValue.$2) ??
+                  const Stream.empty(),
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<Object>> snapshot) {
+                final List<Object> list = snapshot.data ?? <Object>[];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Card(
+                    // elevation: style.inputFieldPortalCardElevation,
+                    // color: style.inputFieldPortalBackgroundColor,
+                    // shadowColor: style.inputFieldPortalShadowColor,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxHeight: 400,
+                      ),
+                      child: Scrollbar(
+                        controller: scrollController,
+                        child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: list.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            final Object tile = list[index];
 
-  void _onMentionClick(String value, Mention mention) {
-    textController.text = textController.text.replaceRange(
-      currentMentionIndex,
-      textController.text.length,
-      currentTrigger + value,
-    );
-    textController.selection = TextSelection.collapsed(
-      offset: textController.text.length,
-    );
-    mentions.add(mention);
-    _clearOverlay();
-  }
-
-  void _clearOverlay() {
-    if (_overlayEntry != null && _overlayEntry!.mounted) {
-      _overlayEntry?.remove();
-      _overlayEntry?.dispose();
-    }
-  }
-
-  void _showMentionModal(List<Widget> children) {
-    final OverlayState overlay = Overlay.of(context);
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final Offset topLeftCornerOffset = renderBox.localToGlobal(Offset.zero);
-
-    double bottomPosition =
-        MediaQuery.of(context).size.height - topLeftCornerOffset.dy;
-    if (widget.inputOptions.inputToolbarMargin != null) {
-      bottomPosition -= widget.inputOptions.inputToolbarMargin!.top -
-          widget.inputOptions.inputToolbarMargin!.bottom;
-    }
-
-    _clearOverlay();
-
-    _overlayEntry = OverlayEntry(
-      builder: (BuildContext context) {
-        return Positioned(
-          width: renderBox.size.width,
-          bottom: bottomPosition,
-          child: Container(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height -
-                  bottomPosition -
-                  MediaQuery.of(context).padding.top -
-                  kToolbarHeight,
-            ),
-            decoration: BoxDecoration(
-              color: Theme.of(context).canvasColor,
-              border: Border(
-                top: BorderSide(
-                  width: 0.2,
-                  color: Theme.of(context).dividerColor,
-                ),
-              ),
-            ),
-            child: Material(
-              color: Theme.of(context).hoverColor,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: children,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-    overlay.insert(_overlayEntry!);
-  }
-
-  void _sendMessage() {
-    if (textController.text.isNotEmpty) {
-      final String text = textController.text;
-      Map<String, Mention> cleanMentions = <String, Mention>{};
-      for (var m in mentions) {
-        cleanMentions[m.title] = m;
-      }
-
-      final ChatMessage message = ChatMessage(
-        text: text,
-        user: widget.controller.currentUser,
-        createdAt: DateTime.now(),
-        mentions: cleanMentions.values.toList(),
-      );
-      widget.controller.sendMessage(message);
-      textController.text = '';
-      if (widget.inputOptions.onTextChange != null) {
-        widget.inputOptions.onTextChange!('');
-      }
-      focusNode.requestFocus();
-    }
+                            return widget.inputOptions.mentionTileBuilder!.call(
+                              tile,
+                              widget.controller.onMentionClick,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              });
+        });
   }
 }

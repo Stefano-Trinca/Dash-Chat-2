@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../dash_chat_2.dart';
-import 'chat_handler.dart';
 
 class ChatController {
   ChatController({
@@ -14,10 +13,13 @@ class ChatController {
     this.messageListOptions = const MessageListOptions(),
     this.messageOptions = const MessageOptions(),
     this.quickReplyOptions = const QuickReplyOptions(),
+    this.inputOptions = const InputOptions(),
   }) {
     notifierMessages.value = initialMessages;
     notifierTypingUsers.value = initilTypingUsers;
     scrollController.addListener(_listenerScrollController);
+    inputFocusNode.addListener(_listenerInputFocusNode);
+    inputController.addListener(_listenerInputController);
   }
 
   final ScrollController scrollController = ScrollController();
@@ -34,9 +36,20 @@ class ChatController {
       ValueNotifier(<ChatMessage>[]);
   List<ChatMessage> get messages => notifierMessages.value;
 
+  final TextEditingController inputController = TextEditingController();
+  final FocusNode inputFocusNode = FocusNode();
+  final ValueNotifier<bool> notifierShowInputOverlay = ValueNotifier(false);
+  final ValueNotifier<bool> notifierInputIsWriting = ValueNotifier(false);
+  final ValueNotifier<(String, String)> notifierMentionTriggerValue =
+      ValueNotifier(('', ''));
+  final ValueNotifier<List<Mention>> notifierMentions =
+      ValueNotifier(<Mention>[]);
+  List<Mention> get mentions => notifierMentions.value;
+
   final MessageListOptions messageListOptions;
   final MessageOptions messageOptions;
   final QuickReplyOptions quickReplyOptions;
+  final InputOptions inputOptions;
 
   void _listenerScrollController() {
     if (showScrollToBottomOption) {
@@ -49,6 +62,16 @@ class ChatController {
     }
   }
 
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  // MESSAGES
+  //
+
   void updateMessages(List<ChatMessage> source) {
     notifierMessages.value = source;
   }
@@ -57,8 +80,27 @@ class ChatController {
     notifierTypingUsers.value = source;
   }
 
-  void sendMessage(ChatMessage message) {
-    handler.onSend?.call(message);
+  void sendMessage() {
+    if (inputController.text.isNotEmpty) {
+      final String text = inputController.text;
+      Map<String, Mention> cleanMentions = <String, Mention>{};
+      for (var m in mentions) {
+        cleanMentions[m.title] = m;
+      }
+
+      final ChatMessage message = ChatMessage(
+        text: text,
+        user: currentUser,
+        createdAt: DateTime.now(),
+        mentions: cleanMentions.values.toList(),
+      );
+      handler.onSend?.call(message);
+      inputController.text = '';
+      if (inputOptions.onTextChange != null) {
+        inputOptions.onTextChange!('');
+      }
+      inputFocusNode.requestFocus();
+    }
   }
 
   void scrollToBottom() {
@@ -69,7 +111,77 @@ class ChatController {
     );
   }
 
+//
+//
+//
+//
+//
+//
+//
+// MENTIONS
+//
+  bool get showInputOverlay => notifierShowInputOverlay.value;
+
+  void _listenerInputFocusNode() {
+    if (inputFocusNode.hasFocus && showInputOverlay) {
+      Future.delayed(Durations.short2).then((_) {
+        notifierShowInputOverlay.value = false;
+      });
+    }
+  }
+
+  void _listenerInputController() {
+    _checkMentions(inputController.text);
+    notifierInputIsWriting.value = inputController.text.isNotEmpty;
+  }
+
+  int currentMentionIndex = -1;
+  String currentTrigger = '';
+  Future<void> _checkMentions(String text) async {
+    bool hasMatch = false;
+    for (final String trigger in inputOptions.onMentionTriggers) {
+      final RegExp regexp = RegExp(r'(?<![^\s<>])' + trigger + r'([^\s<>]+)$');
+      if (regexp.hasMatch(text)) {
+        hasMatch = true;
+        currentMentionIndex = inputController.text.indexOf(regexp);
+        currentTrigger = trigger;
+        final String value = regexp.firstMatch(text)!.group(1)!;
+        notifierMentionTriggerValue.value = (currentTrigger, value);
+        notifierShowInputOverlay.value = true;
+      }
+    }
+    if (!hasMatch && showInputOverlay) {
+      clearOverlay();
+    }
+  }
+
+  void onMentionClick(String value, Mention mention) {
+    inputController.text = inputController.text.replaceRange(
+      currentMentionIndex,
+      inputController.text.length,
+      currentTrigger + value,
+    );
+    inputController.selection = TextSelection.collapsed(
+      offset: inputController.text.length,
+    );
+    List<Mention> _mentions = mentions.toList();
+    _mentions.add(mention);
+    notifierMentions.value = _mentions;
+    clearOverlay();
+  }
+
+  void clearOverlay() {
+    if (showInputOverlay) {
+      notifierShowInputOverlay.value = false;
+      notifierMentionTriggerValue.value = ('', '');
+    }
+  }
+
   void dispose() {
+    notifierShowInputOverlay.value = false;
+    notifierMentionTriggerValue.value = ('', '');
     scrollController.removeListener(_listenerScrollController);
+    inputFocusNode.removeListener(_listenerInputFocusNode);
+    inputController.removeListener(_listenerInputController);
   }
 }

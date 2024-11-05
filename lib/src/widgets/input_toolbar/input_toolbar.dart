@@ -89,9 +89,7 @@ class InputToolbarState extends State<InputToolbar>
             widget.inputOptions.inputDecoration ?? defaultInputDecoration(),
         maxLength: widget.inputOptions.maxInputLength,
         minLines: 1,
-        maxLines: widget.inputOptions.sendOnEnter
-            ? 1
-            : widget.inputOptions.inputMaxLines,
+        maxLines: widget.inputOptions.inputMaxLines,
         cursorColor: widget.inputOptions.cursorStyle.color,
         cursorWidth: widget.inputOptions.cursorStyle.width,
         showCursor: !widget.inputOptions.cursorStyle.hide,

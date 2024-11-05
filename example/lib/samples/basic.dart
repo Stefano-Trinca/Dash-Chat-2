@@ -36,6 +36,7 @@ class BasicState extends State<Basic> {
               (e.firstName ?? '').toLowerCase().contains(value.toLowerCase()))
         ]),
       ),
+      builders: ChatBuilders(),
       inputOptions: InputOptions(
         sendOnEnter: true,
         inputDecoration: const InputDecoration(hintText: 'Scrivi un Messaggio'),
@@ -49,8 +50,8 @@ class BasicState extends State<Basic> {
         ),
         showTrailingBeforeSend: true,
       ),
-      messages: messages,
-      // messages: [],
+      // messages: messages,
+      messages: [],
       messageOptions: MessageOptions(
         showTime: true,
       ),
@@ -60,7 +61,7 @@ class BasicState extends State<Basic> {
         },
         emptyListBuilder: (context) {
           return Center(
-            child: Text('Nessun Messaggio inviato'),
+            child: Text('Nessun Messaggio uff'),
           );
         },
       ),

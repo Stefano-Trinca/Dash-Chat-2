@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Dash Chat Demo',
       theme: ThemeData(
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
-            brightness: Brightness.dark, seedColor: Colors.deepPurple),
+            brightness: Brightness.light, seedColor: Colors.deepPurple),
       ),
       home: MyHomePage(),
     );

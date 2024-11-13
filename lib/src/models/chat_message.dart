@@ -147,16 +147,19 @@ class MessageStatus {
 
 enum MessageType {
   user,
+  typing,
   system;
 
   @override
   String toString() => switch (this) {
         MessageType.user => 'user',
+        MessageType.typing => 'typing',
         MessageType.system => 'system',
       };
 
   static MessageType parse(String value) => switch (value) {
         'user' => MessageType.user,
+        'typing' => MessageType.typing,
         'system' => MessageType.system,
         _ => MessageType.user,
       };

@@ -50,13 +50,21 @@ class TextContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final childMessage = messageTextBuilder != null
-        ? messageTextBuilder!(message, previousMessage, nextMessage)
-        : DefaultMessageText(
-            message: message,
-            isOwnMessage: isOwnMessage,
-            messageOptions: messageOptions,
-          );
+    final childMessage = (message.type == MessageType.typing)
+        ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: LoadingAnimationWidget.waveDots(
+              color: messageOptions.getTextColor(context, false),
+              size: 32,
+            ),
+          )
+        : ((messageTextBuilder != null)
+            ? messageTextBuilder!(message, previousMessage, nextMessage)
+            : DefaultMessageText(
+                message: message,
+                isOwnMessage: isOwnMessage,
+                messageOptions: messageOptions,
+              ));
 
     if (message.type == MessageType.system) {
       return Padding(
@@ -71,22 +79,22 @@ class TextContainer extends StatelessWidget {
               message, previousMessage, nextMessage)
           : defaultMessageDecoration(
               color: messageOptions.getContainerColor(context, isOwnMessage),
-              borderTopLeft:
-                  isPreviousSameAuthor && !isOwnMessage && !isAfterDateSeparator
-                      ? 0.0
-                      : messageOptions.borderRadius,
-              borderTopRight:
-                  isPreviousSameAuthor && isOwnMessage && !isAfterDateSeparator
-                      ? 0.0
-                      : messageOptions.borderRadius,
+              borderTopLeft: (!isNextSameAuthor && !isOwnMessage) ||
+                      (isAfterDateSeparator && !isOwnMessage)
+                  ? 6.0
+                  : messageOptions.borderRadius,
+              borderTopRight: (!isNextSameAuthor && isOwnMessage) ||
+                      (isAfterDateSeparator && isOwnMessage)
+                  ? 6.0
+                  : messageOptions.borderRadius,
               borderBottomLeft:
-                  !isOwnMessage && !isBeforeDateSeparator && isNextSameAuthor
-                      ? 0.0
-                      : messageOptions.borderRadius,
+                  // !isOwnMessage && !isBeforeDateSeparator && isNextSameAuthor
+                  //     ? 6.0 :
+                  messageOptions.borderRadius,
               borderBottomRight:
-                  isOwnMessage && !isBeforeDateSeparator && isNextSameAuthor
-                      ? 0.0
-                      : messageOptions.borderRadius,
+                  // isOwnMessage && !isBeforeDateSeparator && isNextSameAuthor
+                  //     ? 6.0 :
+                  messageOptions.borderRadius,
             ),
       padding: messageOptions.messagePadding,
       child: childMessage,

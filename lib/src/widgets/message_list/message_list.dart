@@ -9,26 +9,43 @@ class MessagesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final list = ValueListenableBuilder(
+    final ValueListenableBuilder<List<ChatMessage>> list =
+        ValueListenableBuilder(
       valueListenable: controller.notifierMessages,
-      builder: (context, messages, child) {
+      builder:
+          (BuildContext context, List<ChatMessage> messages, Widget? child) {
         if (messages.isEmpty) {
           return builders.emptyBuilder?.call(context) ??
               const DefaultListEmptyBuilder();
         } else {
-          return _ListView(
-            controller: controller,
-            messages: messages,
-            chatBuilders: builders,
-            messageOptions: controller.messageOptions,
-          );
+          return ValueListenableBuilder(
+              valueListenable: controller.notifierTypingUsers,
+              builder: (BuildContext context, List<String> typingUsers,
+                  Widget? child) {
+                return _ListView(
+                  controller: controller,
+                  messages: typingUsers.isEmpty
+                      ? messages
+                      : [
+                          for (var u in typingUsers)
+                            ChatMessage(
+                              user: u,
+                              createdAt: DateTime.now(),
+                              type: MessageType.typing,
+                            ),
+                          ...messages
+                        ],
+                  chatBuilders: builders,
+                  messageOptions: controller.messageOptions,
+                );
+              });
         }
       },
     );
 
-    final scrollToBottom = ValueListenableBuilder(
+    final ValueListenableBuilder<bool> scrollToBottom = ValueListenableBuilder(
       valueListenable: controller.notifierShowScrollToBottom,
-      builder: (context, value, child) {
+      builder: (BuildContext context, bool value, Widget? child) {
         if (value) {
           return Align(
               alignment: Alignment.bottomCenter,
@@ -46,12 +63,10 @@ class MessagesList extends StatelessWidget {
 
     return Stack(
       fit: StackFit.expand,
-      children: [
-        //list
+      children: <Widget>[
         list,
         // load more
         //TODO: add load more
-        // scroll to bottom
         scrollToBottom,
       ],
     );
@@ -74,7 +89,8 @@ class _ListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
       return ListView.builder(
         // physics: widget.messageListOptions.scrollPhysics,
         padding: controller.readOnly ? null : EdgeInsets.zero,
@@ -82,10 +98,10 @@ class _ListView extends StatelessWidget {
         reverse: true,
         itemCount: messages.length,
         itemBuilder: (BuildContext context, int i) {
-          final prevMessage =
+          final ChatMessage? prevMessage =
               (i < messages.length - 1) ? messages[i + 1] : null;
-          final nextMessage = (i > 0) ? messages[i - 1] : null;
-          final message = messages[i];
+          final ChatMessage? nextMessage = (i > 0) ? messages[i - 1] : null;
+          final ChatMessage message = messages[i];
 
           final bool isAfterDateSeparator = _shouldShowDateSeparator(
               prevMessage, message, chatBuilders.separatorFrequency);
@@ -95,7 +111,7 @@ class _ListView extends StatelessWidget {
                 message, nextMessage, chatBuilders.separatorFrequency);
           }
 
-          final messageRow = messageOptions.messageRowBuilder != null
+          final Widget messageRow = messageOptions.messageRowBuilder != null
               ? messageOptions.messageRowBuilder!.call(
                   message,
                   prevMessage,
@@ -116,14 +132,15 @@ class _ListView extends StatelessWidget {
                 );
 
           if (isAfterDateSeparator) {
-            final dateSeparator = chatBuilders.dateSeparatorBuilder != null
-                ? chatBuilders.dateSeparatorBuilder!.call(message.createdAt)
-                : DefaultDateSeparator(
-                    date: message.createdAt,
-                  );
+            final Widget dateSeparator =
+                chatBuilders.dateSeparatorBuilder != null
+                    ? chatBuilders.dateSeparatorBuilder!.call(message.createdAt)
+                    : DefaultDateSeparator(
+                        date: message.createdAt,
+                      );
 
             return Column(
-              children: [
+              children: <Widget>[
                 dateSeparator,
                 messageRow,
               ],

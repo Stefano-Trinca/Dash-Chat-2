@@ -85,7 +85,7 @@ class MessageRow extends StatelessWidget {
               ? messageOptions.marginSameAuthor
               : messageOptions.marginDifferentAuthor,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment:
             isOwnMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: <Widget>[
@@ -131,7 +131,8 @@ class MessageRow extends StatelessWidget {
                             isOwnMessage: isOwnMessage,
                             messageOptions: messageOptions,
                           ),
-                  if (message.text.isNotEmpty)
+                  if (message.text.isNotEmpty ||
+                      message.type == MessageType.typing)
                     TextContainer(
                       messageOptions: messageOptions,
                       message: message,

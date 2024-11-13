@@ -8,6 +8,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:video_player/video_player.dart' as vp;
 import 'dart:developer' as dev;
 

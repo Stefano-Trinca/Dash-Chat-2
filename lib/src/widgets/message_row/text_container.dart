@@ -51,12 +51,9 @@ class TextContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final childMessage = (message.type == MessageType.typing)
-        ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: LoadingAnimationWidget.waveDots(
-              color: messageOptions.getTextColor(context, false),
-              size: 32,
-            ),
+        ? LoadingAnimationWidget.waveDots(
+            color: messageOptions.getTextColor(context, false),
+            size: 32,
           )
         : ((messageTextBuilder != null)
             ? messageTextBuilder!(message, previousMessage, nextMessage)
@@ -96,7 +93,9 @@ class TextContainer extends StatelessWidget {
                   //     ? 6.0 :
                   messageOptions.borderRadius,
             ),
-      padding: messageOptions.messagePadding,
+      padding: message.type == MessageType.typing
+          ? messageOptions.typingPadding
+          : messageOptions.messagePadding,
       child: childMessage,
     );
   }

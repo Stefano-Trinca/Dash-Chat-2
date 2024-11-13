@@ -14,6 +14,8 @@ class MessageOptions {
     this.onPressMessage,
     this.onPressMention,
     this.messagePadding = const EdgeInsets.all(11),
+    this.typingPadding =
+        const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
     this.maxWidth,
     this.messageDecorationBuilder,
     this.top,
@@ -169,6 +171,11 @@ class MessageOptions {
   ///
   /// Default to: EdgeInsets.all(11)
   final EdgeInsets messagePadding;
+
+  /// Padding around the text in chat bubbles
+  ///
+  /// Default to: EdgeInsets.symetric(horizontal: 24, vertical: 4)
+  final EdgeInsets typingPadding;
 
   /// Max message width
   ///

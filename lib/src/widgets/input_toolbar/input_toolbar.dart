@@ -79,23 +79,45 @@ class InputToolbarState extends State<InputToolbar>
 
     final Widget field = Directionality(
       textDirection: widget.inputOptions.inputTextDirection,
-      child: TextField(
-        focusNode: widget.controller.inputFocusNode,
-        controller: widget.controller.inputController,
-        enabled: !widget.inputOptions.inputDisabled,
-        textCapitalization: widget.inputOptions.inputCapitalization,
-        textInputAction: widget.inputOptions.textInputAction,
-        decoration:
-            widget.inputOptions.inputDecoration ?? defaultInputDecoration(),
-        maxLength: widget.inputOptions.maxInputLength,
-        minLines: 1,
-        maxLines: widget.inputOptions.inputMaxLines,
-        cursorColor: widget.inputOptions.cursorStyle.color,
-        cursorWidth: widget.inputOptions.cursorStyle.width,
-        showCursor: !widget.inputOptions.cursorStyle.hide,
-        style: widget.inputOptions.inputTextStyle,
-        onSubmitted: (String value) => widget.controller.sendMessage(),
-        autocorrect: widget.inputOptions.autocorrect,
+      child: KeyboardListener(
+        focusNode: FocusNode(),
+        onKeyEvent: (KeyEvent event) {
+          if (event.logicalKey == LogicalKeyboardKey.enter) {
+            final bool isAltPressed = HardwareKeyboard.instance.isAltPressed;
+
+            if (isAltPressed && event is KeyDownEvent) {
+              final String text = widget.controller.inputController.text;
+              final TextSelection selection =
+                  widget.controller.inputController.selection;
+              widget.controller.inputController.text =
+                  text.replaceRange(selection.start, selection.end, '\n');
+              widget.controller.inputController.selection = selection.copyWith(
+                baseOffset: selection.start + 1,
+                extentOffset: selection.start + 1,
+              );
+            } else if (event is KeyDownEvent && !isAltPressed) {
+              widget.controller.sendMessage();
+            }
+          }
+        },
+        child: TextField(
+          focusNode: widget.controller.inputFocusNode,
+          controller: widget.controller.inputController,
+          enabled: !widget.inputOptions.inputDisabled,
+          textCapitalization: widget.inputOptions.inputCapitalization,
+          textInputAction: TextInputAction.none,
+          keyboardType: TextInputType.multiline,
+          decoration:
+              widget.inputOptions.inputDecoration ?? defaultInputDecoration(),
+          maxLength: widget.inputOptions.maxInputLength,
+          minLines: 1,
+          maxLines: widget.inputOptions.inputMaxLines,
+          cursorColor: widget.inputOptions.cursorStyle.color,
+          cursorWidth: widget.inputOptions.cursorStyle.width,
+          showCursor: !widget.inputOptions.cursorStyle.hide,
+          style: widget.inputOptions.inputTextStyle,
+          autocorrect: widget.inputOptions.autocorrect,
+        ),
       ),
     );
 

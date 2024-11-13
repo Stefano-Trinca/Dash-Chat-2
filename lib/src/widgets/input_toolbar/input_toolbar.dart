@@ -82,6 +82,7 @@ class InputToolbarState extends State<InputToolbar>
       child: KeyboardListener(
         focusNode: FocusNode(),
         onKeyEvent: (KeyEvent event) {
+          print('keyevent = $event');
           if (event.logicalKey == LogicalKeyboardKey.enter) {
             final bool isAltPressed = HardwareKeyboard.instance.isAltPressed;
 
@@ -106,7 +107,7 @@ class InputToolbarState extends State<InputToolbar>
           enabled: !widget.inputOptions.inputDisabled,
           textCapitalization: widget.inputOptions.inputCapitalization,
           textInputAction: TextInputAction.none,
-          keyboardType: TextInputType.multiline,
+          // keyboardType: TextInputType.multiline,
           decoration:
               widget.inputOptions.inputDecoration ?? defaultInputDecoration(),
           maxLength: widget.inputOptions.maxInputLength,

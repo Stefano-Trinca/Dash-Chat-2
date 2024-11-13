@@ -82,6 +82,8 @@ class ChatController {
 
   void sendMessage() {
     if (inputController.text.isNotEmpty) {
+      inputFocusNode.unfocus();
+
       final String text = inputController.text;
       Map<String, Mention> cleanMentions = <String, Mention>{};
       for (var m in mentions) {
@@ -95,11 +97,16 @@ class ChatController {
         mentions: cleanMentions.values.toList(),
       );
       handler.onSend?.call(message);
-      inputController.text = '';
+      inputController.clear();
       if (inputOptions.onTextChange != null) {
         inputOptions.onTextChange!('');
       }
-      inputFocusNode.requestFocus();
+
+      //todo: find a better solution
+      Future.delayed(const Duration(milliseconds: 50), () {
+        inputFocusNode.requestFocus();
+      });
+      // inputFocusNode.requestFocus();
     }
   }
 

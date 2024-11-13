@@ -82,7 +82,6 @@ class InputToolbarState extends State<InputToolbar>
       child: KeyboardListener(
         focusNode: FocusNode(),
         onKeyEvent: (KeyEvent event) {
-          print('keyevent = $event');
           if (event.logicalKey == LogicalKeyboardKey.enter) {
             final bool isAltPressed = HardwareKeyboard.instance.isAltPressed;
 

@@ -55,6 +55,19 @@ class BasicState extends State<Basic> {
       // messages: [],
       messageOptions: MessageOptions(
         showTime: true,
+        messagePadding: EdgeInsets.all(12),
+        messageActionsBuilder: (message, isOwnMessage) {
+          if (isOwnMessage) return SizedBox();
+          return Row(
+            children: [
+              IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.thumb_up_off_alt,
+                  ))
+            ],
+          );
+        },
       ),
       messageListOptions: MessageListOptions(
         onLoadEarlier: () async {

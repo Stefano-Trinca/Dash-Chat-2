@@ -28,6 +28,7 @@ class MessageOptions {
     this.showTime = false,
     this.timeFormat,
     this.messageTimeBuilder,
+    this.messageActionsBuilder,
     this.messageMediaBuilder,
     this.borderRadius = 18.0,
     this.marginDifferentAuthor = const EdgeInsets.only(top: 15),
@@ -161,6 +162,10 @@ class MessageOptions {
   /// (shown under the text when [showTime] is true)
   final Widget Function(ChatMessage message, bool isOwnMessage)?
       messageTimeBuilder;
+
+  /// Builder for create a custom actions on the bottom of the bubble
+  final Widget Function(ChatMessage message, bool isOwnMessage)?
+      messageActionsBuilder;
 
   /// List of MatchText using flutter_parsed_text library
   /// to parse and customize accordingly some part of the text

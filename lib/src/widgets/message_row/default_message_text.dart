@@ -20,26 +20,44 @@ class DefaultMessageText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!messageOptions.showTime &&
+        messageOptions.messageActionsBuilder == null) {
+      return getMessage(context);
+    }
+
     return Column(
       crossAxisAlignment:
+          // CrossAxisAlignment.end,
           isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: <Widget>[
         getMessage(context),
-        if (messageOptions.showTime)
-          messageOptions.messageTimeBuilder != null
-              ? messageOptions.messageTimeBuilder!(message, isOwnMessage)
-              : Padding(
-                  padding: messageOptions.timePadding,
-                  child: Text(
-                    (messageOptions.timeFormat ?? intl.DateFormat('HH:mm'))
-                        .format(message.createdAt),
-                    style: TextStyle(
-                      color: messageOptions.getTimeTextColor(
-                          context, isOwnMessage),
-                      fontSize: messageOptions.timeFontSize,
-                    ),
-                  ),
-                ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (messageOptions.messageActionsBuilder != null)
+              messageOptions.messageActionsBuilder!.call(message, isOwnMessage)
+            else
+              const SizedBox(),
+            if (!messageOptions.showTime)
+              const SizedBox()
+            else
+              messageOptions.messageTimeBuilder != null
+                  ? messageOptions.messageTimeBuilder!(message, isOwnMessage)
+                  : Padding(
+                      padding: messageOptions.timePadding,
+                      child: Text(
+                        (messageOptions.timeFormat ?? intl.DateFormat('HH:mm'))
+                            .format(message.createdAt),
+                        style: TextStyle(
+                          color: messageOptions.getTimeTextColor(
+                              context, isOwnMessage),
+                          fontSize: messageOptions.timeFontSize,
+                        ),
+                      ),
+                    )
+          ],
+        ),
       ],
     );
   }

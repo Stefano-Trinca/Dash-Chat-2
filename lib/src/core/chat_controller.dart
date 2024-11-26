@@ -6,7 +6,7 @@ class ChatController {
   ChatController({
     required this.currentUser,
     List<ChatMessage> initialMessages = const <ChatMessage>[],
-    List<String> initilTypingUsers = const <String>[],
+    Map<String, String> initilTypingUsers = const <String, String>{},
     this.readOnly = false,
     this.showScrollToBottomOption = true,
     this.handler = const ChatHandler(),
@@ -29,9 +29,9 @@ class ChatController {
 
   final bool showScrollToBottomOption;
   final ValueNotifier<bool> notifierShowScrollToBottom = ValueNotifier(false);
-  final ValueNotifier<List<String>> notifierTypingUsers =
-      ValueNotifier(<String>[]);
-  List<String> get typingUsers => notifierTypingUsers.value;
+  final ValueNotifier<Map<String, String>> notifierTypingUsers =
+      ValueNotifier({});
+  Map<String, String> get typingUsers => notifierTypingUsers.value;
   final ValueNotifier<List<ChatMessage>> notifierMessages =
       ValueNotifier(<ChatMessage>[]);
   List<ChatMessage> get messages => notifierMessages.value;
@@ -76,7 +76,7 @@ class ChatController {
     notifierMessages.value = source;
   }
 
-  void updateTypingUsers(List<String> source) {
+  void updateTypingUsers(Map<String, String> source) {
     notifierTypingUsers.value = source;
   }
 

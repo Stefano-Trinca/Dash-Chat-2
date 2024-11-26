@@ -1,6 +1,6 @@
 name: dash_chat_2
 description: The most complete Chat UI for flutter. Easy to use, highly customizable and fully featured
-version: 0.0.36
+version: 0.0.37
 homepage: https://github.com/SebastienBtr/Dash-Chat-2
 
 environment:
@@ -14,6 +14,7 @@ dependencies:
   flutter_markdown: ^0.7.1
   flutter_parsed_text: ^2.2.1
   flutter_portal: ^1.1.4
+  flutter_animate: ^4.5.2
   intl: ^0.19.0
   url_launcher: ^6.0.10
   video_player: ^2.2.5

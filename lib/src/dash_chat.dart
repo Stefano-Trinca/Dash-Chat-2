@@ -46,8 +46,10 @@ class DashChat extends StatefulWidget {
   /// Option to make the chat read only, it will hide the input field
   final bool readOnly;
 
-  /// List of users currently typing in the chat
-  final List<String>? typingUsers;
+  /// List of users currently typing in the chat with the optional message
+  /// es.
+  /// "user_uid" : "typing message (es. Sta scrivendo...)"
+  final Map<String, String>? typingUsers;
 
   @override
   State<DashChat> createState() => _DashChatState();
@@ -62,7 +64,7 @@ class _DashChatState extends State<DashChat> {
       currentUser: widget.currentUser,
       handler: widget.handler,
       initialMessages: widget.messages,
-      initilTypingUsers: widget.typingUsers ?? <String>[],
+      initilTypingUsers: widget.typingUsers ?? <String, String>{},
       messageListOptions: widget.messageListOptions,
       messageOptions: widget.messageOptions,
       quickReplyOptions: widget.quickReplyOptions,
@@ -78,7 +80,7 @@ class _DashChatState extends State<DashChat> {
       controller.updateMessages(widget.messages);
     }
     if (oldWidget.typingUsers != widget.typingUsers) {
-      controller.updateTypingUsers(widget.typingUsers ?? []);
+      controller.updateTypingUsers(widget.typingUsers ?? <String, String>{});
     }
     super.didUpdateWidget(oldWidget);
   }

@@ -51,9 +51,9 @@ class TextContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final childMessage = (message.type == MessageType.typing)
-        ? LoadingAnimationWidget.waveDots(
-            color: messageOptions.getTextColor(context, false),
-            size: 32,
+        ? DefaultMessageTypingUser(
+            message: message,
+            messageOptions: messageOptions,
           )
         : ((messageTextBuilder != null)
             ? messageTextBuilder!(message, previousMessage, nextMessage)

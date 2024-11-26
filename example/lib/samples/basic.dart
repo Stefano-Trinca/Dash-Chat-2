@@ -37,7 +37,7 @@ class BasicState extends State<Basic> {
         ]),
       ),
       builders: ChatBuilders(),
-      typingUsers: ['assistant'],
+      typingUsers: {'assistant': ''},
       inputOptions: InputOptions(
         sendOnEnter: true,
         inputDecoration: const InputDecoration(hintText: 'Scrivi un Messaggio'),

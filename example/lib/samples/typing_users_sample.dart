@@ -23,7 +23,7 @@ class TypingUsersSampleState extends State<TypingUsersSample> {
             messages.insert(0, m);
           });
         }),
-        typingUsers: <String>['3'],
+        typingUsers: {"3": "Sta scrivendo..."},
         messages: messages,
       ),
     );

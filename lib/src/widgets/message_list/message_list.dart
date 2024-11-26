@@ -20,18 +20,19 @@ class MessagesList extends StatelessWidget {
         } else {
           return ValueListenableBuilder(
               valueListenable: controller.notifierTypingUsers,
-              builder: (BuildContext context, List<String> typingUsers,
+              builder: (BuildContext context, Map<String, String> typingUsers,
                   Widget? child) {
                 return _ListView(
                   controller: controller,
                   messages: typingUsers.isEmpty
                       ? messages
                       : [
-                          for (var u in typingUsers)
+                          for (var u in typingUsers.entries)
                             ChatMessage(
-                              user: u,
+                              user: u.key,
                               createdAt: DateTime.now(),
                               type: MessageType.typing,
+                              text: u.value,
                             ),
                           ...messages
                         ],

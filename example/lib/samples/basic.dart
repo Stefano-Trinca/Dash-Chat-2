@@ -16,6 +16,7 @@ class BasicState extends State<Basic> {
   Widget build(BuildContext context) {
     final chat = DashChat(
       currentUser: 'user',
+      inputEnabled: true,
       handler: ChatHandler(
         onSend: (ChatMessage m) {
           log('mentions = ${m.mentions}');
@@ -37,7 +38,7 @@ class BasicState extends State<Basic> {
         ]),
       ),
       builders: ChatBuilders(),
-      typingUsers: {'assistant': ''},
+      typingUsers: {'assistant': 'sto scrivendo...'},
       inputOptions: InputOptions(
         sendOnEnter: true,
         inputDecoration: const InputDecoration(hintText: 'Scrivi un Messaggio'),
@@ -55,6 +56,9 @@ class BasicState extends State<Basic> {
       // messages: [],
       messageOptions: MessageOptions(
         showTime: true,
+        typingTextColor: Theme.of(context).colorScheme.primary,
+        typingTextColorShimmer:
+            Theme.of(context).colorScheme.onSecondary.withAlpha(160),
         messagePadding: EdgeInsets.all(12),
         messageActionsBuilder: (message, isOwnMessage) {
           if (isOwnMessage) return SizedBox();
@@ -70,6 +74,8 @@ class BasicState extends State<Basic> {
         },
       ),
       messageListOptions: MessageListOptions(
+        scrollToBottomIconButtonBackgroundColor: Colors.blue,
+        scrollToBottomIconButtonForegroundColor: Colors.cyanAccent,
         onLoadEarlier: () async {
           await Future.delayed(const Duration(seconds: 3));
         },

@@ -12,6 +12,7 @@ class DashChat extends StatefulWidget {
     this.messageListOptions = const MessageListOptions(),
     this.quickReplyOptions = const QuickReplyOptions(),
     this.showScrollToBottomOption = true,
+    this.inputEnabled = true,
     this.readOnly = false,
     this.typingUsers,
     Key? key,
@@ -43,7 +44,10 @@ class DashChat extends StatefulWidget {
   /// Options show the scroll-to-bottom button
   final bool showScrollToBottomOption;
 
-  /// Option to make the chat read only, it will hide the input field
+  /// If the input is enabled or not
+  final bool inputEnabled;
+
+  /// hide the inputfiled
   final bool readOnly;
 
   /// List of users currently typing in the chat with the optional message
@@ -68,8 +72,8 @@ class _DashChatState extends State<DashChat> {
       messageListOptions: widget.messageListOptions,
       messageOptions: widget.messageOptions,
       quickReplyOptions: widget.quickReplyOptions,
-      readOnly: widget.readOnly,
       showScrollToBottomOption: widget.showScrollToBottomOption,
+      inputEnable: widget.inputEnabled,
     );
     super.initState();
   }
@@ -81,6 +85,9 @@ class _DashChatState extends State<DashChat> {
     }
     if (oldWidget.typingUsers != widget.typingUsers) {
       controller.updateTypingUsers(widget.typingUsers ?? <String, String>{});
+    }
+    if (oldWidget.inputEnabled != widget.inputEnabled) {
+      controller.updateEnableTyping(widget.inputEnabled);
     }
     super.didUpdateWidget(oldWidget);
   }

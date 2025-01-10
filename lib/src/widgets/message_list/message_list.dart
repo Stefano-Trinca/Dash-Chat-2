@@ -54,6 +54,10 @@ class MessagesList extends StatelessWidget {
                 padding: const EdgeInsets.all(24),
                 child: DeafultScrollToBottom(
                   onPressed: controller.scrollToBottom,
+                  backgroundColor: controller.messageListOptions
+                      .scrollToBottomIconButtonBackgroundColor,
+                  foregroundColor: controller.messageListOptions
+                      .scrollToBottomIconButtonForegroundColor,
                 ),
               ));
         } else {
@@ -92,64 +96,70 @@ class _ListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      return ListView.builder(
-        // physics: widget.messageListOptions.scrollPhysics,
-        padding: controller.readOnly ? null : EdgeInsets.zero,
-        controller: controller.scrollController,
-        reverse: true,
-        itemCount: messages.length,
-        itemBuilder: (BuildContext context, int i) {
-          final ChatMessage? prevMessage =
-              (i < messages.length - 1) ? messages[i + 1] : null;
-          final ChatMessage? nextMessage = (i > 0) ? messages[i - 1] : null;
-          final ChatMessage message = messages[i];
+      return ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          scrollbars: false,
+        ),
+        child: ListView.builder(
+          // physics: widget.messageListOptions.scrollPhysics,
+          padding: EdgeInsets.zero,
+          controller: controller.scrollController,
+          reverse: true,
 
-          final bool isAfterDateSeparator = _shouldShowDateSeparator(
-              prevMessage, message, chatBuilders.separatorFrequency);
-          bool isBeforeDateSeparator = false;
-          if (nextMessage != null) {
-            isBeforeDateSeparator = _shouldShowDateSeparator(
-                message, nextMessage, chatBuilders.separatorFrequency);
-          }
+          itemCount: messages.length,
+          itemBuilder: (BuildContext context, int i) {
+            final ChatMessage? prevMessage =
+                (i < messages.length - 1) ? messages[i + 1] : null;
+            final ChatMessage? nextMessage = (i > 0) ? messages[i - 1] : null;
+            final ChatMessage message = messages[i];
 
-          final Widget messageRow = messageOptions.messageRowBuilder != null
-              ? messageOptions.messageRowBuilder!.call(
-                  message,
-                  prevMessage,
-                  nextMessage,
-                  isAfterDateSeparator,
-                  isBeforeDateSeparator,
-                )
-              : MessageRow(
-                  currentUser: controller.currentUser,
-                  message: message,
-                  getChatUser: controller.handler.getChatUser,
-                  nextMessage: nextMessage,
-                  previousMessage: prevMessage,
-                  isAfterDateSeparator: isAfterDateSeparator,
-                  isBeforeDateSeparator: isBeforeDateSeparator,
-                  messageOptions: messageOptions,
-                  maxWidth: constraints.maxWidth * 0.7,
-                );
+            final bool isAfterDateSeparator = _shouldShowDateSeparator(
+                prevMessage, message, chatBuilders.separatorFrequency);
+            bool isBeforeDateSeparator = false;
+            if (nextMessage != null) {
+              isBeforeDateSeparator = _shouldShowDateSeparator(
+                  message, nextMessage, chatBuilders.separatorFrequency);
+            }
 
-          if (isAfterDateSeparator) {
-            final Widget dateSeparator =
-                chatBuilders.dateSeparatorBuilder != null
-                    ? chatBuilders.dateSeparatorBuilder!.call(message.createdAt)
-                    : DefaultDateSeparator(
-                        date: message.createdAt,
-                      );
+            final Widget messageRow = messageOptions.messageRowBuilder != null
+                ? messageOptions.messageRowBuilder!.call(
+                    message,
+                    prevMessage,
+                    nextMessage,
+                    isAfterDateSeparator,
+                    isBeforeDateSeparator,
+                  )
+                : MessageRow(
+                    currentUser: controller.currentUser,
+                    message: message,
+                    getChatUser: controller.handler.getChatUser,
+                    nextMessage: nextMessage,
+                    previousMessage: prevMessage,
+                    isAfterDateSeparator: isAfterDateSeparator,
+                    isBeforeDateSeparator: isBeforeDateSeparator,
+                    messageOptions: messageOptions,
+                    maxWidth: constraints.maxWidth * 0.7,
+                  );
 
-            return Column(
-              children: <Widget>[
-                dateSeparator,
-                messageRow,
-              ],
-            );
-          } else {
-            return messageRow;
-          }
-        },
+            if (isAfterDateSeparator) {
+              final Widget dateSeparator = chatBuilders.dateSeparatorBuilder !=
+                      null
+                  ? chatBuilders.dateSeparatorBuilder!.call(message.createdAt)
+                  : DefaultDateSeparator(
+                      date: message.createdAt,
+                    );
+
+              return Column(
+                children: <Widget>[
+                  dateSeparator,
+                  messageRow,
+                ],
+              );
+            } else {
+              return messageRow;
+            }
+          },
+        ),
       );
     });
   }

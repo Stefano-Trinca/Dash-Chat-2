@@ -96,7 +96,7 @@ class InputOptions {
 
   /// Builder to create your own send button widget
   /// You can use defaultSendButton to only override some variables
-  final Widget Function(void Function() send)? sendButtonBuilder;
+  final Widget Function(void Function()? send)? sendButtonBuilder;
 
   /// Icon for the send button
   final IconData sendIcon;

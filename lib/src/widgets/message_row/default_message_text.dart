@@ -64,18 +64,20 @@ class DefaultMessageText extends StatelessWidget {
 
   Widget getMessage(BuildContext context) {
     if (message.isMarkdown) {
-      return MarkdownBody(
-        data: message.text,
-        selectable: true,
-        styleSheet: messageOptions.markdownStyleSheet,
-        onTapLink: (String value, String? href, String title) {
-          if (href != null) {
-            openLink(href);
-          } else {
-            openLink(value);
-          }
-        },
-      );
+      return messageOptions.markdownBodyBuilder
+              ?.call(message.text, messageOptions.markdownStyleSheet) ??
+          MarkdownBody(
+            data: message.text,
+            selectable: true,
+            styleSheet: messageOptions.markdownStyleSheet,
+            onTapLink: (String value, String? href, String title) {
+              if (href != null) {
+                openLink(href);
+              } else {
+                openLink(value);
+              }
+            },
+          );
     } else if (message.mentions != null && message.mentions!.isNotEmpty) {
       List<TextSpan> spans = <TextSpan>[];
 

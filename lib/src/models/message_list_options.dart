@@ -15,6 +15,8 @@ class MessageListOptions {
     this.onLoadEarlier,
     this.typingBuilder,
     this.scrollPhysics,
+    this.scrollToBottomIconButtonBackgroundColor,
+    this.scrollToBottomIconButtonForegroundColor,
   });
 
   /// If you want to who a date separator between messages of different dates
@@ -56,6 +58,12 @@ class MessageListOptions {
 
   /// Scroll physics of the ListView
   final ScrollPhysics? scrollPhysics;
+
+  /// Color of the scroll to bottom icon button
+  final Color? scrollToBottomIconButtonBackgroundColor;
+
+  /// Color of the scroll to bottom icon
+  final Color? scrollToBottomIconButtonForegroundColor;
 }
 
 enum SeparatorFrequency { days, hours }

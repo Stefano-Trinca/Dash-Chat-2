@@ -2,9 +2,9 @@ part of '../../../dash_chat_2.dart';
 
 class DefaultSendButton extends StatelessWidget {
   const DefaultSendButton(
-      {super.key, required this.onSend, this.icon = Icons.send, this.style});
+      {super.key, this.onSend, this.icon = Icons.send, this.style});
 
-  final VoidCallback onSend;
+  final VoidCallback? onSend;
   final IconData icon;
   final ButtonStyle? style;
 

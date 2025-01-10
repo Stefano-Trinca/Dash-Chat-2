@@ -2,9 +2,9 @@ part of '../../../dash_chat_2.dart';
 
 class DefaultMessageTypingUser extends StatelessWidget {
   const DefaultMessageTypingUser({
-    super.key,
     required this.message,
     required this.messageOptions,
+    super.key,
   });
 
   final ChatMessage message;
@@ -18,19 +18,17 @@ class DefaultMessageTypingUser extends StatelessWidget {
         size: 32,
       );
     }
-    final Color textColor = messageOptions.getTextColor(context, false);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Text(
         message.text,
         style: TextStyle(
-          color: textColor.withOpacity(0.4),
+          color: messageOptions.getTypingTextColor(context),
         ),
       ).animate(onPlay: (AnimationController ctrl) => ctrl.repeat()).shimmer(
-          duration: 1200.ms,
-          color: messageOptions
-              .getContainerColor(context, false)
-              .withOpacity(0.8)),
+            duration: 1200.ms,
+            color: messageOptions.getTypingTextColorShimmer(context),
+          ),
     );
   }
 }

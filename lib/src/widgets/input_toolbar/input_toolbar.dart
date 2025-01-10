@@ -61,65 +61,78 @@ class InputToolbarState extends State<InputToolbar>
     );
 
     final Widget sendButton = ValueListenableBuilder(
-      valueListenable: widget.controller.notifierInputIsWriting,
-      builder: (BuildContext context, bool value, Widget? child) {
-        if (value || widget.inputOptions.alwaysShowSend) {
-          return widget.inputOptions.sendButtonBuilder != null
-              ? widget.inputOptions
-                  .sendButtonBuilder!(() => widget.controller.sendMessage())
-              : DefaultSendButton(
-                  onSend: () => widget.controller.sendMessage(),
-                  icon: widget.inputOptions.sendIcon,
-                );
-        } else {
-          return const SizedBox();
-        }
-      },
-    );
+        valueListenable: widget.controller.notifierInputEnable,
+        builder: (BuildContext context, bool inputEnable, Widget? child) {
+          return ValueListenableBuilder(
+            valueListenable: widget.controller.notifierInputIsWriting,
+            builder: (BuildContext context, bool value, Widget? child) {
+              if (value || widget.inputOptions.alwaysShowSend) {
+                return widget.inputOptions.sendButtonBuilder != null
+                    ? widget.inputOptions.sendButtonBuilder!(!inputEnable
+                        ? null
+                        : () => widget.controller.sendMessage())
+                    : DefaultSendButton(
+                        onSend: !inputEnable
+                            ? null
+                            : () => widget.controller.sendMessage(),
+                        icon: widget.inputOptions.sendIcon,
+                      );
+              } else {
+                return const SizedBox();
+              }
+            },
+          );
+        });
 
-    final Widget field = Directionality(
-      textDirection: widget.inputOptions.inputTextDirection,
-      child: KeyboardListener(
-        focusNode: FocusNode(),
-        onKeyEvent: (KeyEvent event) {
-          if (event.logicalKey == LogicalKeyboardKey.enter) {
-            final bool isAltPressed = HardwareKeyboard.instance.isAltPressed;
+    final Widget field = ValueListenableBuilder(
+        valueListenable: widget.controller.notifierInputEnable,
+        builder: (BuildContext context, bool inputEnable, Widget? child) {
+          return Directionality(
+            textDirection: widget.inputOptions.inputTextDirection,
+            child: KeyboardListener(
+              focusNode: FocusNode(),
+              onKeyEvent: (KeyEvent event) {
+                if (event.logicalKey == LogicalKeyboardKey.enter) {
+                  final bool isAltPressed =
+                      HardwareKeyboard.instance.isAltPressed;
 
-            if (isAltPressed && event is KeyDownEvent) {
-              final String text = widget.controller.inputController.text;
-              final TextSelection selection =
-                  widget.controller.inputController.selection;
-              widget.controller.inputController.text =
-                  text.replaceRange(selection.start, selection.end, '\n');
-              widget.controller.inputController.selection = selection.copyWith(
-                baseOffset: selection.start + 1,
-                extentOffset: selection.start + 1,
-              );
-            } else if (event is KeyDownEvent && !isAltPressed) {
-              widget.controller.sendMessage();
-            }
-          }
-        },
-        child: TextField(
-          focusNode: widget.controller.inputFocusNode,
-          controller: widget.controller.inputController,
-          enabled: !widget.inputOptions.inputDisabled,
-          textCapitalization: widget.inputOptions.inputCapitalization,
-          textInputAction: TextInputAction.none,
-          // keyboardType: TextInputType.multiline,
-          decoration:
-              widget.inputOptions.inputDecoration ?? defaultInputDecoration(),
-          maxLength: widget.inputOptions.maxInputLength,
-          minLines: 1,
-          maxLines: widget.inputOptions.inputMaxLines,
-          cursorColor: widget.inputOptions.cursorStyle.color,
-          cursorWidth: widget.inputOptions.cursorStyle.width,
-          showCursor: !widget.inputOptions.cursorStyle.hide,
-          style: widget.inputOptions.inputTextStyle,
-          autocorrect: widget.inputOptions.autocorrect,
-        ),
-      ),
-    );
+                  if (isAltPressed && event is KeyDownEvent) {
+                    final String text = widget.controller.inputController.text;
+                    final TextSelection selection =
+                        widget.controller.inputController.selection;
+                    widget.controller.inputController.text =
+                        text.replaceRange(selection.start, selection.end, '\n');
+                    widget.controller.inputController.selection =
+                        selection.copyWith(
+                      baseOffset: selection.start + 1,
+                      extentOffset: selection.start + 1,
+                    );
+                  } else if (event is KeyDownEvent && !isAltPressed) {
+                    widget.controller.sendMessage();
+                  }
+                }
+              },
+              child: TextField(
+                focusNode: widget.controller.inputFocusNode,
+                controller: widget.controller.inputController,
+                enabled: inputEnable,
+                textCapitalization: widget.inputOptions.inputCapitalization,
+                textInputAction: TextInputAction.none,
+                // keyboardType: TextInputType.multiline,
+                decoration: widget.inputOptions.inputDecoration ??
+                    defaultInputDecoration(),
+                maxLength: widget.inputOptions.maxInputLength,
+                minLines: 1,
+                maxLines: widget.inputOptions.inputMaxLines,
+                cursorColor: widget.inputOptions.cursorStyle.color,
+                cursorWidth: widget.inputOptions.cursorStyle.width,
+                showCursor: !widget.inputOptions.cursorStyle.hide,
+                style: widget.inputOptions.inputTextStyle,
+                autocorrect: widget.inputOptions.autocorrect,
+              ),
+            ),
+          );
+        });
 
     return SafeArea(
       top: false,

@@ -37,18 +37,23 @@ class MessageOptions {
     this.timeFontSize = 10.0,
     this.timePadding = const EdgeInsets.only(top: 5),
     this.markdownStyleSheet,
+    this.markdownBodyBuilder,
     Color? currentUserContainerColor,
     Color? currentUserTextColor,
     Color? containerColor,
     Color? textColor,
     Color? currentUserTimeTextColor,
     Color? timeTextColor,
+    Color? typingTextColor,
+    Color? typingTextColorShimmer,
   })  : _currentUserContainerColor = currentUserContainerColor,
         _containerColor = containerColor,
         _currentUserTextColor = currentUserTextColor,
         _currentUserTimeTextColor = currentUserTimeTextColor,
         _textColor = textColor,
-        _timeTextColor = timeTextColor;
+        _timeTextColor = timeTextColor,
+        _typingTextColor = typingTextColor,
+        _typingTextColorShimmer = typingTextColorShimmer;
 
   // Fields for color options
 
@@ -69,6 +74,12 @@ class MessageOptions {
 
   /// Color of the other users' time text in chat bubbles
   final Color? _timeTextColor;
+
+  /// Color of the typing text in chat bubbles
+  final Color? _typingTextColor;
+
+  /// Color of the typing text shimmer in chat bubbles
+  final Color? _typingTextColorShimmer;
 
   /// General method to get the container color based on the user type.
   /// If [isOwnMessage] is true, it will return the current user's container color.
@@ -96,6 +107,17 @@ class MessageOptions {
         ? (_currentUserTimeTextColor ??
             getTextColor(context, true).withOpacity(0.6))
         : (_timeTextColor ?? getTextColor(context, false).withOpacity(0.6));
+  }
+
+  /// General method to get the typing text color based on the user type.
+  Color getTypingTextColor(BuildContext context) {
+    return _typingTextColor ?? getTextColor(context, false).withAlpha(246);
+  }
+
+  /// General method to get the typing text shimmer color based on the user type.
+  Color getTypingTextColorShimmer(BuildContext context) {
+    return _typingTextColorShimmer ??
+        getContainerColor(context, false).withAlpha(200);
   }
 
   // Rest of the properties and methods remain unchanged
@@ -242,4 +264,8 @@ class MessageOptions {
 
   /// Stylesheet for markdown message rendering
   final MarkdownStyleSheet? markdownStyleSheet;
+
+  /// Custom markdown body builder
+  final Widget Function(String data, MarkdownStyleSheet? markdownStyleSheet)?
+      markdownBodyBuilder;
 }

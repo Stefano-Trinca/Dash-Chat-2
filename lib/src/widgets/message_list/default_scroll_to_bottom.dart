@@ -1,123 +1,31 @@
 part of '../../../dash_chat_2.dart';
 
 class DeafultScrollToBottom extends StatelessWidget {
-  const DeafultScrollToBottom(
-      {super.key, required this.onPressed, this.icon = Icons.arrow_downward});
+  const DeafultScrollToBottom({
+    super.key,
+    required this.onPressed,
+    this.icon = Icons.arrow_downward,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
 
   final VoidCallback onPressed;
   final IconData icon;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   @override
   Widget build(BuildContext context) {
     return IconButton.filled(
       style: IconButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          foregroundColor: Theme.of(context).colorScheme.onSurface,
+          backgroundColor:
+              backgroundColor ?? Theme.of(context).colorScheme.surface,
+          foregroundColor:
+              foregroundColor ?? Theme.of(context).colorScheme.onSurface,
           elevation: 4,
-          shadowColor:
-              Theme.of(context).colorScheme.onSurface.withOpacity(0.25)),
+          shadowColor: Theme.of(context).colorScheme.onSurface.withAlpha(64)),
       onPressed: onPressed,
       icon: Icon(icon),
-    );
-  }
-}
-
-/// {@category Default widgets}
-class DefaultScrollToBottomOld extends StatelessWidget {
-  const DefaultScrollToBottomOld({
-    required this.scrollController,
-    this.readOnly = false,
-    this.backgroundColor,
-    this.textColor,
-    this.bottom = 10.0,
-    this.left = 0.0,
-    this.right = 0.0,
-    this.top,
-    this.height = 30.0,
-    this.width = 30.0,
-    this.elevation = 5,
-    this.icon = Icons.arrow_downward,
-    this.iconSize = 18,
-    this.onScrollToBottomPress,
-    Key? key,
-  }) : super(key: key);
-
-  /// Scroll controller of the chat list
-  final ScrollController scrollController;
-
-  /// Background color of the button
-  final Color? backgroundColor;
-
-  /// Icon color of the button
-  final Color? textColor;
-
-  /// The distance that the child's bottom edge is inset from the bottom of the stack
-  final double? bottom;
-
-  /// The distance that the child's left edge is inset from the left of the stack
-  final double? left;
-
-  /// The distance that the child's right edge is inset from the right of the stack
-  final double? right;
-
-  /// The distance that the child's top edge is inset from the top of the stack
-  final double? top;
-
-  /// Height of the button
-  final double height;
-
-  /// Width of the button
-  final double width;
-
-  /// Elevation of the button
-  final double elevation;
-
-  /// Icon of the button
-  final IconData icon;
-
-  /// Icon size
-  final double iconSize;
-
-  /// Function to call when the scroll-to-bottom widget is pressed
-  /// It will scroll down in any case
-  final void Function()? onScrollToBottomPress;
-
-  /// Whether the chat is read only, used to add safe area padding to bottom
-  final bool readOnly;
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      right: right,
-      left: left,
-      top: top,
-      bottom: readOnly
-          ? MediaQuery.of(context).padding.bottom + (bottom ?? 0)
-          : bottom,
-      child: SizedBox(
-        width: width,
-        height: height,
-        child: RawMaterialButton(
-          elevation: elevation,
-          fillColor: backgroundColor,
-          shape: const CircleBorder(),
-          child: Icon(
-            icon,
-            size: iconSize,
-            color: textColor,
-          ),
-          onPressed: () {
-            if (onScrollToBottomPress != null) {
-              onScrollToBottomPress!();
-            }
-            scrollController.animateTo(
-              0.0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-            );
-          },
-        ),
-      ),
     );
   }
 }

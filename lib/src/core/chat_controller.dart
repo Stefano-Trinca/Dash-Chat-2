@@ -7,7 +7,7 @@ class ChatController {
     required this.currentUser,
     List<ChatMessage> initialMessages = const <ChatMessage>[],
     Map<String, String> initilTypingUsers = const <String, String>{},
-    this.readOnly = false,
+    bool inputEnable = true,
     this.showScrollToBottomOption = true,
     this.handler = const ChatHandler(),
     this.messageListOptions = const MessageListOptions(),
@@ -17,13 +17,13 @@ class ChatController {
   }) {
     notifierMessages.value = initialMessages;
     notifierTypingUsers.value = initilTypingUsers;
+    notifierInputEnable.value = inputEnable;
     scrollController.addListener(_listenerScrollController);
     inputFocusNode.addListener(_listenerInputFocusNode);
     inputController.addListener(_listenerInputController);
   }
 
   final ScrollController scrollController = ScrollController();
-  final bool readOnly;
   final String currentUser;
   final ChatHandler handler;
 
@@ -38,6 +38,7 @@ class ChatController {
 
   final TextEditingController inputController = TextEditingController();
   final FocusNode inputFocusNode = FocusNode();
+  final ValueNotifier<bool> notifierInputEnable = ValueNotifier(true);
   final ValueNotifier<bool> notifierShowInputOverlay = ValueNotifier(false);
   final ValueNotifier<bool> notifierInputIsWriting = ValueNotifier(false);
   final ValueNotifier<(String, String)> notifierMentionTriggerValue =
@@ -60,6 +61,19 @@ class ChatController {
         notifierShowScrollToBottom.value = false;
       }
     }
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  // INPUT CONTROLLERS
+  //
+  void updateEnableTyping(bool value) {
+    notifierInputEnable.value = value;
   }
 
   //

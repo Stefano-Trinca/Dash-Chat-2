@@ -38,6 +38,7 @@ class MessageOptions {
     this.timePadding = const EdgeInsets.only(top: 5),
     this.markdownStyleSheet,
     this.markdownBodyBuilder,
+    this.messageStreamBuilder,
     Color? currentUserContainerColor,
     Color? currentUserTextColor,
     Color? containerColor,
@@ -173,7 +174,9 @@ class MessageOptions {
       bool isBeforeDateSeparator)? messageRowBuilder;
 
   /// Builder to create own message text widget
-  final Widget Function(ChatMessage message, ChatMessage? previousMessage,
+  ///
+  /// you can access the 'DefaultMessageText' to only override some variables
+  final Widget? Function(ChatMessage message, ChatMessage? previousMessage,
       ChatMessage? nextMessage)? messageTextBuilder;
 
   /// Builder to create your own media container widget
@@ -268,4 +271,7 @@ class MessageOptions {
   /// Custom markdown body builder
   final Widget Function(String data, MarkdownStyleSheet? markdownStyleSheet)?
       markdownBodyBuilder;
+
+  /// Message stream for message that are in stream status
+  final Stream<String> Function(ChatMessage message)? messageStreamBuilder;
 }

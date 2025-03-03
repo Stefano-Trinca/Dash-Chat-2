@@ -45,7 +45,7 @@ class TextContainer extends StatelessWidget {
 
   /// We could access that from messageOptions but we want to reuse this widget
   /// for media and be able to override the text builder
-  final Widget Function(ChatMessage, ChatMessage?, ChatMessage?)?
+  final Widget? Function(ChatMessage, ChatMessage?, ChatMessage?)?
       messageTextBuilder;
 
   @override
@@ -55,13 +55,12 @@ class TextContainer extends StatelessWidget {
             message: message,
             messageOptions: messageOptions,
           )
-        : ((messageTextBuilder != null)
-            ? messageTextBuilder!(message, previousMessage, nextMessage)
-            : DefaultMessageText(
-                message: message,
-                isOwnMessage: isOwnMessage,
-                messageOptions: messageOptions,
-              ));
+        : messageTextBuilder?.call(message, previousMessage, nextMessage) ??
+            DefaultMessageText(
+              message: message,
+              isOwnMessage: isOwnMessage,
+              messageOptions: messageOptions,
+            );
 
     if (message.type == MessageType.system) {
       return Padding(

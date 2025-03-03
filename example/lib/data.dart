@@ -75,6 +75,12 @@ List<ChatMessage> allUsersSample = <ChatMessage>[
 
 List<ChatMessage> basicSample = <ChatMessage>[
   ChatMessage(
+    user: 'test',
+    text: ' ',
+    createdAt: DateTime(2025, 03, 03, 16, 45),
+    status: MessageStatus.streaming,
+  ),
+  ChatMessage(
     text: 'google.com hello you @Marc is it &you okay?',
     user: '2',
     createdAt: DateTime(2021, 01, 31, 16, 45),
@@ -83,56 +89,56 @@ List<ChatMessage> basicSample = <ChatMessage>[
       Mention(title: '&you'),
     ],
   ),
-  ChatMessage(
-    text: 'google.com',
-    user: '2',
-    createdAt: DateTime(2021, 01, 30, 16, 45),
-  ),
-  ChatMessage(
-      type: MessageType.system,
-      user: 'system',
-      createdAt: DateTime(2021, 01, 30, 16, 45),
-      text: 'Chat system Upgrade #done!',
-      mentions: [Mention(title: '#done')]),
-  ChatMessage(
-    text: "Oh what's up guys?",
-    user: '2',
-    createdAt: DateTime(2021, 01, 30, 16, 45),
-  ),
-  ChatMessage(
-    text: 'Ciao',
-    user: 'user',
-    createdAt: DateTime(2021, 01, 30, 15, 50),
-  ),
-  ChatMessage(
-    text: 'How you doin?',
-    user: '8',
-    createdAt: DateTime(2021, 01, 30, 16, 34),
-  ),
-  ChatMessage(
-    type: MessageType.system,
-    user: 'system',
-    createdAt: DateTime(2021, 01, 30, 16, 45),
-    text:
-        'Chat system message longer for get infomation about the other users and how they use the chat',
-  ),
-  ChatMessage(
-    isMarkdown: true,
-    text:
-        "```dart\nvoid main() {\n  print('Hello World');\n}\n```\nThe above code will print \"Hello World\" to the console when run.\n\nHere's a breakdown of the code:\n\n* The `main()` function is the entry point of the program. It's where execution begins.\n* `print('Hello World')` prints \"Hello World\" to the console. The `print()` function is a built-in function in Dart that outputs data to the console.\n\nYou can run this code by creating a new Dart file (e.g., `hello_world.dart`) and pasting the code into it. Then, open a terminal window, navigate to the directory where the file is saved, and run the following command:\n\n```\ndart hello_world.dart\n```\n\nThis will compile and run the Dart program, and you should see \"Hello World\" printed to the console. Know more: www.google.com ",
-    user: '2',
-    createdAt: DateTime(2021, 01, 30, 15, 50),
-  ),
-  ChatMessage(
-    text: 'Hey!',
-    user: 'user',
-    createdAt: DateTime(2021, 01, 28, 15, 50),
-  ),
-  ChatMessage(
-    text: 'Hey!',
-    user: 'user',
-    createdAt: DateTime(2021, 01, 28, 15, 50),
-  ),
+  // ChatMessage(
+  //   text: 'google.com',
+  //   user: '2',
+  //   createdAt: DateTime(2021, 01, 30, 16, 45),
+  // ),
+  // ChatMessage(
+  //     type: MessageType.system,
+  //     user: 'system',
+  //     createdAt: DateTime(2021, 01, 30, 16, 45),
+  //     text: 'Chat system Upgrade #done!',
+  //     mentions: [Mention(title: '#done')]),
+  // ChatMessage(
+  //   text: "Oh what's up guys?",
+  //   user: '2',
+  //   createdAt: DateTime(2021, 01, 30, 16, 45),
+  // ),
+  // ChatMessage(
+  //   text: 'Ciao',
+  //   user: 'user',
+  //   createdAt: DateTime(2021, 01, 30, 15, 50),
+  // ),
+  // ChatMessage(
+  //   text: 'How you doin?',
+  //   user: '8',
+  //   createdAt: DateTime(2021, 01, 30, 16, 34),
+  // ),
+  // ChatMessage(
+  //   type: MessageType.system,
+  //   user: 'system',
+  //   createdAt: DateTime(2021, 01, 30, 16, 45),
+  //   text:
+  //       'Chat system message longer for get infomation about the other users and how they use the chat',
+  // ),
+  // ChatMessage(
+  //   isMarkdown: true,
+  //   text:
+  //       "```dart\nvoid main() {\n  print('Hello World');\n}\n```\nThe above code will print \"Hello World\" to the console when run.\n\nHere's a breakdown of the code:\n\n* The `main()` function is the entry point of the program. It's where execution begins.\n* `print('Hello World')` prints \"Hello World\" to the console. The `print()` function is a built-in function in Dart that outputs data to the console.\n\nYou can run this code by creating a new Dart file (e.g., `hello_world.dart`) and pasting the code into it. Then, open a terminal window, navigate to the directory where the file is saved, and run the following command:\n\n```\ndart hello_world.dart\n```\n\nThis will compile and run the Dart program, and you should see \"Hello World\" printed to the console. Know more: www.google.com ",
+  //   user: '2',
+  //   createdAt: DateTime(2021, 01, 30, 15, 50),
+  // ),
+  // ChatMessage(
+  //   text: 'Hey!',
+  //   user: 'user',
+  //   createdAt: DateTime(2021, 01, 28, 15, 50),
+  // ),
+  // ChatMessage(
+  //   text: 'Hey!',
+  //   user: 'user',
+  //   createdAt: DateTime(2021, 01, 28, 15, 50),
+  // ),
 ];
 
 List<ChatMessage> media = <ChatMessage>[

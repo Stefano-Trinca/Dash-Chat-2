@@ -6,8 +6,8 @@ class DefaultMessageText extends StatelessWidget {
     required this.message,
     required this.isOwnMessage,
     this.messageOptions = const MessageOptions(),
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   /// Message tha contains the text to show
   final ChatMessage message;
@@ -34,7 +34,7 @@ class DefaultMessageText extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+          children: <Widget>[
             if (messageOptions.messageActionsBuilder != null)
               messageOptions.messageActionsBuilder!.call(message, isOwnMessage)
             else
@@ -63,11 +63,25 @@ class DefaultMessageText extends StatelessWidget {
   }
 
   Widget getMessage(BuildContext context) {
+    print('message status: ${message.toJson()}');
+    if (message.status == MessageStatus.streaming) {
+      return StreamBuilder<String>(
+        stream: messageOptions.messageStreamBuilder?.call(message) ??
+            Stream<String>.value(message.text),
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) =>
+            _getMessage(context, snapshot.data ?? ''),
+      );
+    } else {
+      return _getMessage(context, message.text);
+    }
+  }
+
+  Widget _getMessage(BuildContext context, String messageText) {
     if (message.isMarkdown) {
       return messageOptions.markdownBodyBuilder
-              ?.call(message.text, messageOptions.markdownStyleSheet) ??
+              ?.call(messageText, messageOptions.markdownStyleSheet) ??
           MarkdownBody(
-            data: message.text,
+            data: messageText,
             selectable: true,
             styleSheet: messageOptions.markdownStyleSheet,
             onTapLink: (String value, String? href, String title) {
@@ -85,7 +99,7 @@ class DefaultMessageText extends StatelessWidget {
           ? messageOptions.getTimeTextColor(context, false)
           : messageOptions.getTextColor(context, isOwnMessage);
 
-      String remainingText = message.text;
+      String remainingText = messageText;
       for (final Mention mention in message.mentions!) {
         int mentionIndex = remainingText.indexOf(mention.title);
 
@@ -135,7 +149,7 @@ class DefaultMessageText extends StatelessWidget {
 
     return RichText(
       text: TextSpan(
-        text: message.text,
+        text: messageText,
         style: TextStyle(
           color: messageOptions.getTextColor(context, isOwnMessage),
         ),

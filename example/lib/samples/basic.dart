@@ -1,8 +1,9 @@
 import 'dart:developer';
 
 import 'package:dash_chat_2/dash_chat_2.dart';
-import '../data.dart';
 import 'package:flutter/material.dart';
+
+import '../data.dart';
 
 class Basic extends StatefulWidget {
   @override
@@ -60,6 +61,7 @@ class BasicState extends State<Basic> {
         typingTextColorShimmer:
             Theme.of(context).colorScheme.onSecondary.withAlpha(160),
         messagePadding: EdgeInsets.all(12),
+        messageStreamBuilder: (message) => generateWordStream(),
         messageActionsBuilder: (message, isOwnMessage) {
           if (isOwnMessage) return SizedBox();
           return Row(
@@ -99,5 +101,49 @@ class BasicState extends State<Basic> {
         ],
       ),
     );
+  }
+}
+
+Stream<String> generateWordStream() {
+  return SentenceStreamer(
+    sentence:
+        'Ciao come stai? Ti va di raccontarmi qualcosa solo per vedere se questa cosa funziona?',
+    interval: const Duration(milliseconds: 200),
+  ).stream;
+}
+
+class SentenceStreamer {
+  final String sentence;
+  final Duration interval;
+  late Stream<String> _stream;
+
+  SentenceStreamer({
+    required this.sentence,
+    this.interval = const Duration(milliseconds: 100),
+  }) {
+    _stream = _createStream();
+  }
+
+  Stream<String> get stream => _stream;
+
+  Stream<String> _createStream() async* {
+    List<String> words = sentence.split(' ');
+    int index = 0;
+    String currentSentence = "";
+
+    while (true) {
+      currentSentence += (index == 0 ? "" : " ") + words[index];
+      yield currentSentence;
+
+      index = (index + 1) % words.length;
+
+      if (index == 0) {
+        await Future.delayed(interval);
+        currentSentence = "";
+      }
+
+      print('the sentence is $currentSentence');
+      await Future.delayed(interval);
+    }
   }
 }

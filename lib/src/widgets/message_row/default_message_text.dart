@@ -63,7 +63,7 @@ class DefaultMessageText extends StatelessWidget {
   }
 
   Widget getMessage(BuildContext context) {
-    print('message status: ${message.toJson()}');
+    // print('message status: ${message.toJson()}');
     if (message.status == MessageStatus.streaming) {
       return StreamBuilder<String>(
         stream: messageOptions.messageStreamBuilder?.call(message) ??

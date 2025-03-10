@@ -13,6 +13,7 @@ class DashChat extends StatefulWidget {
     this.quickReplyOptions = const QuickReplyOptions(),
     this.showScrollToBottomOption = true,
     this.inputEnabled = true,
+    this.inputStatus = InputStatus.none,
     this.readOnly = false,
     this.typingUsers,
     Key? key,
@@ -47,6 +48,9 @@ class DashChat extends StatefulWidget {
   /// If the input is enabled or not
   final bool inputEnabled;
 
+  /// Status of the input
+  final InputStatus inputStatus;
+
   /// hide the inputfiled
   final bool readOnly;
 
@@ -74,6 +78,7 @@ class _DashChatState extends State<DashChat> {
       quickReplyOptions: widget.quickReplyOptions,
       showScrollToBottomOption: widget.showScrollToBottomOption,
       inputEnable: widget.inputEnabled,
+      inputStatus: widget.inputStatus,
     );
     super.initState();
   }
@@ -88,6 +93,9 @@ class _DashChatState extends State<DashChat> {
     }
     if (oldWidget.inputEnabled != widget.inputEnabled) {
       controller.updateEnableTyping(widget.inputEnabled);
+    }
+    if (oldWidget.inputStatus != widget.inputStatus) {
+      controller.updateInputStatus(widget.inputStatus);
     }
     super.didUpdateWidget(oldWidget);
   }

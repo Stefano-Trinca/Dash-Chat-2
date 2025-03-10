@@ -102,7 +102,7 @@ class _ListView extends StatelessWidget {
         ),
         child: ListView.builder(
           // physics: widget.messageListOptions.scrollPhysics,
-          padding: EdgeInsets.zero,
+          padding: controller.messageListOptions.messageListPadding,
           controller: controller.scrollController,
           reverse: true,
 

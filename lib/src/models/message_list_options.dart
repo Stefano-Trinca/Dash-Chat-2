@@ -7,7 +7,7 @@ class MessageListOptions {
     this.dateSeparatorFormat,
     this.dateSeparatorBuilder,
     this.emptyListBuilder,
-    this.separatorFrequency = SeparatorFrequency.days,
+    this.separatorFrequency = SeparatorFrequency.hours,
     this.scrollController,
     this.chatFooterBuilder,
     this.showFooterBeforeQuickReplies = false,
@@ -17,6 +17,7 @@ class MessageListOptions {
     this.scrollPhysics,
     this.scrollToBottomIconButtonBackgroundColor,
     this.scrollToBottomIconButtonForegroundColor,
+    this.messageListPadding = const EdgeInsets.all(0),
   });
 
   /// If you want to who a date separator between messages of different dates
@@ -64,6 +65,9 @@ class MessageListOptions {
 
   /// Color of the scroll to bottom icon
   final Color? scrollToBottomIconButtonForegroundColor;
+
+  /// Padding of the message list
+  final EdgeInsets messageListPadding;
 }
 
 enum SeparatorFrequency { days, hours }

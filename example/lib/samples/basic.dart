@@ -13,18 +13,29 @@ class Basic extends StatefulWidget {
 class BasicState extends State<Basic> {
   List<ChatMessage> messages = basicSample;
 
+  InputStatus inputStatus = InputStatus.none;
+
+  void onSend(ChatMessage m) async {
+    // log('mentions = ${m.mentions}');
+    setState(() {
+      messages.insert(0, m);
+      inputStatus = InputStatus.loading;
+    });
+
+    await Future.delayed(const Duration(seconds: 5));
+    setState(() {
+      inputStatus = InputStatus.none;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final chat = DashChat(
       currentUser: 'user',
       inputEnabled: true,
+      inputStatus: inputStatus,
       handler: ChatHandler(
-        onSend: (ChatMessage m) {
-          log('mentions = ${m.mentions}');
-          setState(() {
-            messages.insert(0, m);
-          });
-        },
+        onSend: onSend,
         getChatUser: (uid) async {
           final idx = users.indexWhere((e) => e.id == uid);
           if (idx == -1) {
@@ -43,8 +54,11 @@ class BasicState extends State<Basic> {
       inputOptions: InputOptions(
         sendOnEnter: true,
         inputDecoration: const InputDecoration(hintText: 'Scrivi un Messaggio'),
-        sendButtonBuilder: (send) =>
-            IconButton(onPressed: send, icon: const Icon(Icons.send_rounded)),
+        sendButtonBuilder: (status, send) => IconButton(
+          onPressed: send,
+          icon:
+              Icon(status.isLoading ? Icons.stop_rounded : Icons.send_rounded),
+        ),
         trailing: [IconButton(onPressed: () {}, icon: const Icon(Icons.mic))],
         mentionTileBuilder: (item, onSelect) => ListTile(
           onTap: () => onSelect(
@@ -52,6 +66,7 @@ class BasicState extends State<Basic> {
           title: Text((item as ChatUser).firstName ?? ''),
         ),
         showTrailingBeforeSend: true,
+        alwaysShowSend: true,
       ),
       messages: messages,
       // messages: [],
@@ -78,6 +93,7 @@ class BasicState extends State<Basic> {
       messageListOptions: MessageListOptions(
         scrollToBottomIconButtonBackgroundColor: Colors.blue,
         scrollToBottomIconButtonForegroundColor: Colors.cyanAccent,
+        messageListPadding: const EdgeInsets.only(top: 200),
         onLoadEarlier: () async {
           await Future.delayed(const Duration(seconds: 3));
         },
@@ -96,7 +112,7 @@ class BasicState extends State<Basic> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: SizedBox()),
+          Expanded(child: Column(children: [])),
           Expanded(child: chat),
         ],
       ),
@@ -142,7 +158,6 @@ class SentenceStreamer {
         currentSentence = "";
       }
 
-      print('the sentence is $currentSentence');
       await Future.delayed(interval);
     }
   }

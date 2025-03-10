@@ -14,10 +14,12 @@ class ChatController {
     this.messageOptions = const MessageOptions(),
     this.quickReplyOptions = const QuickReplyOptions(),
     this.inputOptions = const InputOptions(),
+    InputStatus inputStatus = InputStatus.none,
   }) {
     notifierMessages.value = initialMessages;
     notifierTypingUsers.value = initilTypingUsers;
     notifierInputEnable.value = inputEnable;
+    notifierInputStatus.value = inputStatus;
     scrollController.addListener(_listenerScrollController);
     inputFocusNode.addListener(_listenerInputFocusNode);
     inputController.addListener(_listenerInputController);
@@ -37,6 +39,9 @@ class ChatController {
   List<ChatMessage> get messages => notifierMessages.value;
 
   final TextEditingController inputController = TextEditingController();
+  final ValueNotifier<InputStatus> notifierInputStatus =
+      ValueNotifier(InputStatus.none);
+  InputStatus get inputStatus => notifierInputStatus.value;
   final FocusNode inputFocusNode = FocusNode();
   final ValueNotifier<bool> notifierInputEnable = ValueNotifier(true);
   final ValueNotifier<bool> notifierShowInputOverlay = ValueNotifier(false);
@@ -76,6 +81,10 @@ class ChatController {
     notifierInputEnable.value = value;
   }
 
+  void updateInputStatus(InputStatus status) {
+    notifierInputStatus.value = status;
+  }
+
   //
   //
   //
@@ -95,7 +104,7 @@ class ChatController {
   }
 
   void sendMessage() {
-    if (inputController.text.isNotEmpty) {
+    if (inputController.text.isNotEmpty && !inputStatus.isLoading) {
       inputFocusNode.unfocus();
 
       final String text = inputController.text;

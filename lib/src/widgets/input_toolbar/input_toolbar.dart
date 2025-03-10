@@ -67,16 +67,23 @@ class InputToolbarState extends State<InputToolbar>
             valueListenable: widget.controller.notifierInputIsWriting,
             builder: (BuildContext context, bool value, Widget? child) {
               if (value || widget.inputOptions.alwaysShowSend) {
-                return widget.inputOptions.sendButtonBuilder != null
-                    ? widget.inputOptions.sendButtonBuilder!(!inputEnable
-                        ? null
-                        : () => widget.controller.sendMessage())
-                    : DefaultSendButton(
-                        onSend: !inputEnable
-                            ? null
-                            : () => widget.controller.sendMessage(),
-                        icon: widget.inputOptions.sendIcon,
-                      );
+                return ValueListenableBuilder(
+                    valueListenable: widget.controller.notifierInputStatus,
+                    builder: (BuildContext context, InputStatus status,
+                        Widget? child) {
+                      return widget.inputOptions.sendButtonBuilder != null
+                          ? widget.inputOptions.sendButtonBuilder!(
+                              status,
+                              !inputEnable
+                                  ? null
+                                  : () => widget.controller.sendMessage())
+                          : DefaultSendButton(
+                              onSend: !inputEnable
+                                  ? null
+                                  : () => widget.controller.sendMessage(),
+                              icon: widget.inputOptions.sendIcon,
+                            );
+                    });
               } else {
                 return const SizedBox();
               }

@@ -78,20 +78,21 @@ class DefaultMessageText extends StatelessWidget {
 
   Widget _getMessage(BuildContext context, String messageText) {
     if (message.isMarkdown) {
-      return messageOptions.markdownBodyBuilder
-              ?.call(messageText, messageOptions.markdownStyleSheet) ??
-          MarkdownBody(
-            data: messageText,
-            selectable: true,
-            styleSheet: messageOptions.markdownStyleSheet,
-            onTapLink: (String value, String? href, String title) {
-              if (href != null) {
-                openLink(href);
-              } else {
-                openLink(value);
-              }
-            },
-          );
+      return SelectionArea(
+        child: messageOptions.markdownBodyBuilder
+                ?.call(messageText, messageOptions.markdownStyleSheet) ??
+            MarkdownBody(
+              data: messageText,
+              styleSheet: messageOptions.markdownStyleSheet,
+              onTapLink: (String value, String? href, String title) {
+                if (href != null) {
+                  openLink(href);
+                } else {
+                  openLink(value);
+                }
+              },
+            ),
+      );
     } else if (message.mentions != null && message.mentions!.isNotEmpty) {
       List<TextSpan> spans = <TextSpan>[];
 
@@ -142,19 +143,26 @@ class DefaultMessageText extends StatelessWidget {
         ));
       }
 
-      return RichText(
-        text: TextSpan(children: spans),
-      );
+      final TextSpan span = TextSpan(children: spans);
+      if (messageOptions.selectable) {
+        return SelectableText.rich(span);
+      } else {
+        return RichText(
+          text: span,
+        );
+      }
     }
 
-    return RichText(
-      text: TextSpan(
-        text: messageText,
-        style: TextStyle(
-          color: messageOptions.getTextColor(context, isOwnMessage),
-        ),
+    final TextSpan textSpan = TextSpan(
+      text: messageText,
+      style: TextStyle(
+        color: messageOptions.getTextColor(context, isOwnMessage),
       ),
     );
+
+    return messageOptions.selectable
+        ? SelectableText.rich(textSpan)
+        : RichText(text: textSpan);
   }
 
   Widget getParsePattern(BuildContext context, String text, bool isMarkdown) {

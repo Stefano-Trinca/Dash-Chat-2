@@ -39,6 +39,7 @@ class MessageOptions {
     this.markdownStyleSheet,
     this.markdownBodyBuilder,
     this.messageStreamBuilder,
+    this.selectable = true,
     Color? currentUserContainerColor,
     Color? currentUserTextColor,
     Color? containerColor,
@@ -274,4 +275,7 @@ class MessageOptions {
 
   /// Message stream for message that are in stream status
   final Stream<String> Function(ChatMessage message)? messageStreamBuilder;
+
+  /// if the message is selectable
+  final bool selectable;
 }

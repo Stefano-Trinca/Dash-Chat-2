@@ -2,7 +2,8 @@ import 'dart:developer';
 
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown/markdown.dart' as md;
 import '../data.dart';
 
 class Basic extends StatefulWidget {
@@ -17,6 +18,7 @@ class BasicState extends State<Basic> {
 
   void onSend(ChatMessage m) async {
     // log('mentions = ${m.mentions}');
+
     setState(() {
       messages.insert(0, m);
       inputStatus = InputStatus.loading;
@@ -61,8 +63,8 @@ class BasicState extends State<Basic> {
         ),
         trailing: [IconButton(onPressed: () {}, icon: const Icon(Icons.mic))],
         mentionTileBuilder: (item, onSelect) => ListTile(
-          onTap: () => onSelect(
-              (item as ChatUser).firstName ?? 'name', Mention(title: 'name')),
+          onTap: () => onSelect((item as ChatUser).firstName ?? 'name',
+              Mention(title: 'mention')),
           title: Text((item as ChatUser).firstName ?? ''),
         ),
         showTrailingBeforeSend: true,
@@ -72,15 +74,24 @@ class BasicState extends State<Basic> {
       // messages: [],
       messageOptions: MessageOptions(
         showTime: true,
+        selectable: true,
+        markdownBodyBuilder: (text, stylesheet) =>
+            markdownBodyBuilder(context, text, stylesheet),
         typingTextColor: Theme.of(context).colorScheme.primary,
         typingTextColorShimmer:
             Theme.of(context).colorScheme.onSecondary.withAlpha(160),
         messagePadding: EdgeInsets.all(12),
         messageStreamBuilder: (message) => generateWordStream(),
         messageActionsBuilder: (message, isOwnMessage) {
-          if (isOwnMessage) return SizedBox();
           return Row(
             children: [
+              if (isOwnMessage) ...[
+                IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.edit,
+                    )),
+              ],
               IconButton(
                   onPressed: () {},
                   icon: Icon(
@@ -115,6 +126,56 @@ class BasicState extends State<Basic> {
           Expanded(child: Column(children: [])),
           Expanded(child: chat),
         ],
+      ),
+    );
+  }
+}
+
+MarkdownBody markdownBodyBuilder(
+    BuildContext context, String text, MarkdownStyleSheet? stylesheet) {
+  return MarkdownBody(
+    data: text,
+    // extensionSet: ,
+    builders: {'mention': MentionBuilder()},
+    styleSheet: stylesheet,
+  );
+}
+
+// class CustomMarkdownParser extends md.ExtensionSet {
+//   CustomMarkdownParser() : super(
+//     md.ExtensionSet.gitHubFlavored) {
+//     // Add the mention tag to the inline parsers
+//     inlineParsers.add(MentionSyntax());
+//   }
+// }
+
+// /// Custom mention syntax that detects <mention>@username</mention>
+// class MentionSyntax extends md.InlineSyntax {
+//   MentionSyntax() : super(r'<mention>(.*?)<\/mention>'); // Regex for <mention> tags
+
+//   @override
+//   bool onMatch(md.InlineParser parser, Match match) {
+//     final mentionText = match.group(1)!; // Extract username inside <mention> tags
+//     parser.addNode(md.Element.text('mention', mentionText)); // Create custom node
+//     return true;
+//   }
+// }
+
+class MentionBuilder extends MarkdownElementBuilder {
+  @override
+  bool isBlockElement() => true;
+
+  @override
+  Widget? visitText(md.Text text, TextStyle? preferredStyle) {
+    print('text = ${text.text}');
+    return GestureDetector(
+      onTap: () {
+        debugPrint("Clicked on mention: ${text.text}");
+      },
+      child: Text(
+        text.text,
+        style: preferredStyle?.copyWith(
+            color: Colors.blue, fontWeight: FontWeight.bold),
       ),
     );
   }

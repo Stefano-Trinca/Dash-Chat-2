@@ -90,6 +90,17 @@ List<ChatMessage> basicSample = <ChatMessage>[
     ],
   ),
   ChatMessage(
+    text:
+        'Markdown google.com hello you <mention>@Marc<mention> is it &you okay?',
+    user: '2',
+    isMarkdown: true,
+    createdAt: DateTime(2021, 01, 31, 16, 45),
+    mentions: [
+      Mention(title: '@Marc'),
+      Mention(title: '&you'),
+    ],
+  ),
+  ChatMessage(
     text: 'google.com',
     user: '2',
     createdAt: DateTime(2021, 01, 30, 16, 45),

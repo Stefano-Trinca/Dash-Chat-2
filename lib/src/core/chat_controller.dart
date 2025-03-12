@@ -118,6 +118,7 @@ class ChatController {
         user: currentUser,
         createdAt: DateTime.now(),
         mentions: cleanMentions.values.toList(),
+        // isMarkdown: true,
       );
       handler.onSend?.call(message);
       inputController.clear();
@@ -189,7 +190,7 @@ class ChatController {
     inputController.text = inputController.text.replaceRange(
       currentMentionIndex,
       inputController.text.length,
-      currentTrigger + value,
+      '<${mention.title}>$value</${mention.title}>',
     );
     inputController.selection = TextSelection.collapsed(
       offset: inputController.text.length,

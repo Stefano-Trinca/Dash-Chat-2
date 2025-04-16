@@ -120,13 +120,14 @@ class BasicState extends State<Basic> {
       appBar: AppBar(
         title: const Text('Basic example'),
       ),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: Column(children: [])),
-          Expanded(child: chat),
-        ],
-      ),
+      body: chat,
+      // body: Row(
+      //   crossAxisAlignment: CrossAxisAlignment.start,
+      //   children: [
+      //     Expanded(child: Column(children: [])),
+      //     Expanded(child: chat),
+      //   ],
+      // ),
     );
   }
 }

@@ -17,6 +17,7 @@ class MessageOptions {
     this.typingPadding =
         const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
     this.maxWidth,
+    this.maxWidthFactor = 0.7,
     this.messageDecorationBuilder,
     this.top,
     this.bottom,
@@ -212,6 +213,11 @@ class MessageOptions {
   ///
   /// Default to: BoxConstraints.maxWidth * 0.7
   final double? maxWidth;
+
+  /// Max message with factor
+  ///
+  /// Default to: 0.7
+  final double maxWidthFactor;
 
   /// When a message has both text and a list of media
   /// it will determine which one to show first

@@ -138,7 +138,8 @@ class _ListView extends StatelessWidget {
                     isAfterDateSeparator: isAfterDateSeparator,
                     isBeforeDateSeparator: isBeforeDateSeparator,
                     messageOptions: messageOptions,
-                    maxWidth: constraints.maxWidth * 0.7,
+                    maxWidth:
+                        constraints.maxWidth * messageOptions.maxWidthFactor,
                   );
 
             if (isAfterDateSeparator) {

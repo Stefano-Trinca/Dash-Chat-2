@@ -20,9 +20,25 @@ class DefaultMessageText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget messageContent = getMessage(context);
+    Widget? messagePrefix = messageOptions.messagePrefixBuilder?.call(
+      message,
+      isOwnMessage,
+    );
+
+    if (messagePrefix != null) {
+      messageContent = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          messagePrefix,
+          Flexible(child: messageContent),
+        ],
+      );
+    }
+
     if (!messageOptions.showTime &&
         messageOptions.messageActionsBuilder == null) {
-      return getMessage(context);
+      return messageContent;
     }
 
     return Column(
@@ -30,7 +46,7 @@ class DefaultMessageText extends StatelessWidget {
           // CrossAxisAlignment.end,
           isOwnMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: <Widget>[
-        getMessage(context),
+        messageContent,
         Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -93,12 +109,16 @@ class DefaultMessageText extends StatelessWidget {
               },
             ),
       );
-    } else if (message.mentions != null && message.mentions!.isNotEmpty) {
-      List<TextSpan> spans = <TextSpan>[];
+    }
 
-      Color textColor = message.type == MessageType.system
-          ? messageOptions.getTimeTextColor(context, false)
-          : messageOptions.getTextColor(context, isOwnMessage);
+    Color textColor = message.type == MessageType.system
+        ? messageOptions.getTimeTextColor(context, false)
+        : ((message.status?.isFailed ?? false)
+            ? messageOptions.getTextColorFailed(context, isOwnMessage)
+            : messageOptions.getTextColor(context, isOwnMessage));
+
+    if (message.mentions != null && message.mentions!.isNotEmpty) {
+      List<TextSpan> spans = <TextSpan>[];
 
       String remainingText = messageText;
       for (final Mention mention in message.mentions!) {
@@ -156,7 +176,7 @@ class DefaultMessageText extends StatelessWidget {
     final TextSpan textSpan = TextSpan(
       text: messageText,
       style: TextStyle(
-        color: messageOptions.getTextColor(context, isOwnMessage),
+        color: textColor,
       ),
     );
 

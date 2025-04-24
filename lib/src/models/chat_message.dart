@@ -146,6 +146,14 @@ class MessageStatus {
   static const MessageStatus received = MessageStatus._internal('received');
   static const MessageStatus pending = MessageStatus._internal('pending');
   static const MessageStatus streaming = MessageStatus._internal('streaming');
+
+  bool get isNone => this == MessageStatus.none;
+  bool get isFailed => this == MessageStatus.failed;
+  bool get isSent => this == MessageStatus.sent;
+  bool get isRead => this == MessageStatus.read;
+  bool get isReceived => this == MessageStatus.received;
+  bool get isPending => this == MessageStatus.pending;
+  bool get isStreaming => this == MessageStatus.streaming;
 }
 
 enum MessageType {

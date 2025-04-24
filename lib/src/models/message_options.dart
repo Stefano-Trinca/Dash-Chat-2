@@ -28,6 +28,7 @@ class MessageOptions {
     this.onTapMedia,
     this.showTime = false,
     this.timeFormat,
+    this.messagePrefixBuilder,
     this.messageTimeBuilder,
     this.messageActionsBuilder,
     this.messageMediaBuilder,
@@ -45,6 +46,7 @@ class MessageOptions {
     Color? currentUserTextColor,
     Color? containerColor,
     Color? textColor,
+    Color? textColorFailed,
     Color? currentUserTimeTextColor,
     Color? timeTextColor,
     Color? typingTextColor,
@@ -54,6 +56,7 @@ class MessageOptions {
         _currentUserTextColor = currentUserTextColor,
         _currentUserTimeTextColor = currentUserTimeTextColor,
         _textColor = textColor,
+        _textColorFailed = textColorFailed,
         _timeTextColor = timeTextColor,
         _typingTextColor = typingTextColor,
         _typingTextColorShimmer = typingTextColorShimmer;
@@ -71,6 +74,9 @@ class MessageOptions {
 
   /// Color of the other users' text in chat bubbles
   final Color? _textColor;
+
+  /// Color of the text in failed messages
+  final Color? _textColorFailed;
 
   /// Color of the current user's time text in chat bubbles
   final Color? _currentUserTimeTextColor;
@@ -100,6 +106,13 @@ class MessageOptions {
     return isOwnMessage
         ? (_currentUserTextColor ?? Theme.of(context).colorScheme.onPrimary)
         : (_textColor ?? Theme.of(context).colorScheme.onSurface);
+  }
+
+  /// General method to get the text color for failed messages.
+  /// if setted, it will return the failed text color.
+  /// Otherwise, it will return the default text color.
+  Color getTextColorFailed(BuildContext context, bool isOwnMessage) {
+    return _textColorFailed ?? getTextColor(context, isOwnMessage);
   }
 
   /// General method to get the time text color based on the user type.
@@ -151,6 +164,10 @@ class MessageOptions {
   final Widget Function(
           String userUid, Function? onPressAvatar, Function? onLongPressAvatar)?
       avatarBuilder;
+
+  /// Widget prefix inside the message container
+  final Widget? Function(ChatMessage message, bool isOwnMessage)?
+      messagePrefixBuilder;
 
   /// Function to call when the user press on an avatar
   final Function(String userUid)? onPressAvatar;

@@ -81,6 +81,13 @@ List<ChatMessage> basicSample = <ChatMessage>[
     // status: MessageStatus.streaming,
   ),
   ChatMessage(
+    user: 'error',
+    text: 'questo è un messaggio di errore',
+    createdAt: DateTime(2025, 03, 03, 16, 48),
+    status: MessageStatus.failed,
+    // status: MessageStatus.streaming,
+  ),
+  ChatMessage(
     text: 'google.com hello you @Marc is it &you okay?',
     user: '2',
     createdAt: DateTime(2021, 01, 31, 16, 45),

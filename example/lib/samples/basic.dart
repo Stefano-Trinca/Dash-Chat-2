@@ -81,6 +81,17 @@ class BasicState extends State<Basic> {
         typingTextColorShimmer:
             Theme.of(context).colorScheme.onSecondary.withAlpha(160),
         messagePadding: EdgeInsets.all(12),
+        textColorFailed: Theme.of(context).colorScheme.error,
+        messagePrefixBuilder: (message, isOwnMessage) {
+          if (message.status?.isFailed ?? false) {
+            return Icon(
+              Icons.info,
+              color: Theme.of(context).colorScheme.error,
+              size: 14,
+            );
+          }
+          return null;
+        },
         messageStreamBuilder: (message) => generateWordStream(),
         messageActionsBuilder: (message, isOwnMessage) {
           return Row(
